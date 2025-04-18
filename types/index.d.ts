@@ -1,0 +1,39 @@
+interface User {
+  _id: string;
+  name: string;
+  isAdmin: boolean;
+  telephone: string;
+  groupFamily: string;
+  imageBase64: string;
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
+interface Category {
+  _id: string;
+  name: string;
+  image: string;
+  imageBase64: string;
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
+interface SubCategory {
+  _id: string;
+  name: string;
+  categoryId: string;
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
+interface Products {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  categoryId: string;
+  subcategoryId: string;
+  imageBase64: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

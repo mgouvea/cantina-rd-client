@@ -1,0 +1,124 @@
+"use client";
+
+import Image from "next/image";
+import React, { useState } from "react";
+import { capitalizeFirstLastName } from "@/utils";
+import { useCategories } from "@/hooks/queries/categories.query";
+import { useUserStore } from "@/contexts";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useProducts } from "@/hooks/queries/products.query";
+import { CardProducts } from "@/components/cardProducts";
+import { CartButton } from "@/components/cartButton";
+import { useCartStore } from "@/contexts/cart-store";
+
+const StorePage = () => {
+  const { user } = useUserStore();
+  const { data: categories } = useCategories();
+  const { data: products } = useProducts();
+  const { totalItems } = useCartStore();
+
+  const [tabs, setTabs] = useState("0");
+
+  const handleCartClick = () => {
+    alert(`totalItems: ${totalItems}`);
+  };
+
+  return (
+    <div className="flex flex-col h-screen py-12 gap-10 overflow-hidden">
+      <div className="flex items-center justify-between gap-5 padding-container pr-10">
+        <div className="flex items-center gap-5">
+          <Image
+            src={user?.imageBase64 || "/avatar.png"}
+            alt="avatar"
+            width={76}
+            height={76}
+            className="inline-block size-20 rounded-full ring-2 ring-gray-400"
+          />
+          <div className="flex flex-col gap-2">
+            <h3 className="text-light-800 text-md font-semibold">
+              Olá {capitalizeFirstLastName(user?.name)}
+            </h3>
+            <div>
+              <p className="text-light-800 text-md font-normal">
+                Comprou ou está pensando em comprar?
+              </p>
+              <p className="text-light-800 text-md font-normal">
+                Adicione ao carrinho.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {totalItems > 0 && (
+          <div className="bg-white rounded-2xl p-5 shadow-xl border border-light-400">
+            <CartButton onCartClick={handleCartClick} />
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col gap-3 md:px-3 overflow-hidden flex-1">
+        <h1 className="text-light-800 text-2xl font-semibold">Cardápio</h1>
+
+        <div className="flex w-full h-full overflow-hidden">
+          <Tabs
+            defaultValue={String(tabs)}
+            className="w-full h-[90%] flex flex-row overflow-hidden"
+            orientation="vertical"
+            onValueChange={(value) => setTabs(value)}
+          >
+            <TabsList className="flex flex-col h-auto w-auto py-7  overflow-y-auto bg-cyan-800/40 shadow-lg">
+              {categories?.map((category: Category, index: number) => (
+                <TabsTrigger
+                  key={category._id}
+                  value={String(index)}
+                  className={`flex-center flex-col w-[93%] ${
+                    index === Number(tabs) && "border-b-9 border-cyan-900"
+                  }`}
+                >
+                  <Image
+                    src={category.imageBase64}
+                    alt={category.name}
+                    width={50}
+                    height={50}
+                    className="h-14 w-auto object-contain text-white"
+                  />
+                  <span
+                    className={`text-md md:text-base capitalize ${
+                      index === Number(tabs)
+                        ? "text-gray-800 font-bold"
+                        : "text-white antialiased"
+                    }`}
+                  >
+                    {category.name}
+                  </span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            {categories?.map((category: Category, index: number) => (
+              <TabsContent
+                key={category._id}
+                value={String(index)}
+                className="w-full h-full overflow-y-auto p-4"
+              >
+                <div className="flex-center flex-wrap gap-9 py-5">
+                  {products?.map((prod: Products) => (
+                    <CardProducts
+                      key={prod._id}
+                      _id={prod._id}
+                      name={prod.name}
+                      price={prod.price}
+                      imageBase64={prod.imageBase64}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
+        <div className="flex border border-red-500 w-full h-16"></div>
+      </div>
+    </div>
+  );
+};
+
+export default StorePage;
