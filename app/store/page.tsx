@@ -10,14 +10,19 @@ import { useProductsByCategoryId } from "@/hooks/queries/products.query";
 import { CardProducts } from "@/components/cardProducts";
 import { CartButton } from "@/components/cartButton";
 import { useCartStore } from "@/contexts/cart-store";
+import { Button } from "@/components/ui/button";
+import { DialogCloseButton } from "@/components/Modal";
+import { TableCartProducts } from "@/components/tableCartProducts";
 
 const StorePage = () => {
   const [tabs, setTabs] = useState("0");
   const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
   const { data: categories } = useCategories();
   const { data: products } = useProductsByCategoryId(categoryId);
-  const { totalItems } = useCartStore();
+  const { totalItems, items } = useCartStore();
+  const totalPrice = useCartStore((state) => state.totalPrice);
   const { user } = useUserStore();
 
   // Set the initial categoryId when categories data is loaded
@@ -28,7 +33,18 @@ const StorePage = () => {
   }, [categories]);
 
   const handleCartClick = () => {
-    alert(`totalItems: ${totalItems}`);
+    setOpen(true);
+  };
+
+  const handleConfirm = () => {
+    const payloadCart = {
+      buyerId: user?._id,
+      groupFamilyId: user?.groupFamily,
+      products: items,
+      totalPrice: totalPrice,
+      createdAt: new Date(),
+    };
+    console.log("payloadCart", payloadCart);
   };
 
   return (
@@ -129,8 +145,35 @@ const StorePage = () => {
             ))}
           </Tabs>
         </div>
-        <div className="flex border border-red-500 w-full h-16"></div>
+        <div className="flex flex-col gap-2 w-full h-[1/3]">
+          <div>
+            <p className="font-bold text-light-800 text-xl capitalize">
+              Valor total do carrinho
+            </p>
+            <p className="font-medium text-light-800 text-md">
+              R$ {totalPrice.toFixed(2)}
+            </p>
+          </div>
+
+          <Button
+            variant="default"
+            className="w-full btn-socio hover:brightness-90"
+            onClick={handleCartClick}
+          >
+            Avançar
+          </Button>
+        </div>
       </div>
+
+      <DialogCloseButton
+        title="Finalizar pedido"
+        description="Deseja confirmar a compra?"
+        open={open}
+        onOpenChange={setOpen}
+        onConfirm={handleConfirm}
+      >
+        <TableCartProducts totalPrice={totalPrice} items={items} />
+      </DialogCloseButton>
     </div>
   );
 };

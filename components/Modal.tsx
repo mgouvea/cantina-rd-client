@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -16,6 +15,7 @@ interface ModalProps {
   children?: React.ReactNode;
   open: boolean;
   onOpenChange?: (open: boolean) => void;
+  onConfirm?: () => void;
 }
 
 export function DialogCloseButton({
@@ -24,25 +24,39 @@ export function DialogCloseButton({
   children,
   open,
   onOpenChange,
+  onConfirm,
 }: ModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          {description && <DialogDescription>{description}</DialogDescription>}
+          <DialogTitle className="text-2xl">{title}</DialogTitle>
+          {description && (
+            <DialogDescription className="text-md">
+              {description}
+            </DialogDescription>
+          )}
         </DialogHeader>
         {children}
-        <DialogFooter className="sm:justify-start">
-          <DialogClose asChild>
+        <DialogFooter>
+          <div className="flex w-full flex-col gap-3">
+            <Button
+              type="button"
+              variant="default"
+              className="cursor-pointer text-lg"
+              onClick={onConfirm}
+            >
+              Confirmar
+            </Button>
             <Button
               type="button"
               variant="secondary"
-              className="cursor-pointer"
+              className="cursor-pointer text-lg"
+              onClick={() => onOpenChange?.(false)}
             >
               Voltar
             </Button>
-          </DialogClose>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

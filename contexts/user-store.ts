@@ -5,6 +5,7 @@ export type User = {
   _id: string;
   name: string;
   imageBase64?: string;
+  groupFamily: string;
 };
 
 interface UserStore {

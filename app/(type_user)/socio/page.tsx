@@ -16,6 +16,8 @@ const Page = () => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
+  console.log("users", users);
+
   const { update } = useUserStore();
 
   useEffect(() => {
