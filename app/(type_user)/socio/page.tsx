@@ -3,20 +3,19 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { NormalizeText } from "@/utils";
 import { Search } from "lucide-react";
-import { Triangle } from "react-loader-spinner";
+import { MagnifyingGlass } from "react-loader-spinner";
 import { useRouter } from "next/navigation";
 import { useUsers } from "@/hooks/queries";
 import { useUserStore } from "@/contexts";
 import { Input } from "@/components/ui/input";
 import { CardUser } from "@/components/cardUser";
+import { User } from "@/types";
 
 const Page = () => {
   const router = useRouter();
   const { data: users, isLoading } = useUsers();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-
-  console.log("users", users);
 
   const { update } = useUserStore();
 
@@ -75,14 +74,15 @@ const Page = () => {
       <div className="mt-5 flex flex-col gap-2">
         {isLoading ? (
           <div className="flex items-center justify-center mt-12">
-            <Triangle
+            <MagnifyingGlass
               visible={true}
               height="80"
               width="80"
-              color="#007dc5"
-              ariaLabel="triangle-loading"
+              ariaLabel="magnifying-glass-loading"
               wrapperStyle={{}}
-              wrapperClass=""
+              wrapperClass="magnifying-glass-wrapper"
+              glassColor="#c0efff"
+              color="#e15b64"
             />
           </div>
         ) : filteredUsers.length > 0 ? (

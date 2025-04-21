@@ -37,3 +37,19 @@ interface Products {
   createdAt: Date;
   updatedAt: Date;
 }
+
+interface ProductItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+export class CreateOrderDto {
+  buyerId: string;
+  groupFamilyId: string;
+  products: ProductItem[];
+  totalPrice: number;
+  createdAt: Date;
+  updatedAt?: Date;
+}

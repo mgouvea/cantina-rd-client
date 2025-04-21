@@ -13,17 +13,27 @@ import { useCartStore } from "@/contexts/cart-store";
 import { Button } from "@/components/ui/button";
 import { DialogCloseButton } from "@/components/Modal";
 import { TableCartProducts } from "@/components/tableCartProducts";
+import { Category, Products } from "@/types";
+import { useAddOrder } from "@/hooks/mutations";
+import { Triangle } from "react-loader-spinner";
+import { ToastProvider, toast } from "@/components/Toast";
+import { Bounce } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const StorePage = () => {
+  const router = useRouter();
   const [tabs, setTabs] = useState("0");
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data: categories } = useCategories();
   const { data: products } = useProductsByCategoryId(categoryId);
-  const { totalItems, items } = useCartStore();
+  const { totalItems, items, clearCart } = useCartStore();
   const totalPrice = useCartStore((state) => state.totalPrice);
-  const { user } = useUserStore();
+  const { user, update } = useUserStore();
+
+  const { mutateAsync: addOrder } = useAddOrder();
 
   // Set the initial categoryId when categories data is loaded
   useEffect(() => {
@@ -36,15 +46,60 @@ const StorePage = () => {
     setOpen(true);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const payloadCart = {
-      buyerId: user?._id,
-      groupFamilyId: user?.groupFamily,
+      buyerId: user?._id || "",
+      groupFamilyId: user?.groupFamily || "",
       products: items,
       totalPrice: totalPrice,
       createdAt: new Date(),
     };
-    console.log("payloadCart", payloadCart);
+
+    try {
+      setIsSubmitting(true);
+      setOpen(false);
+
+      await addOrder(payloadCart);
+
+      // Aguardar um pouco antes de esconder o loading e mostrar o toast
+      setTimeout(() => {
+        setIsSubmitting(false);
+        // Usar o toast diretamente
+        toast.success("Pedido realizado com sucesso!", {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+          transition: Bounce,
+        });
+
+        // Limpar o carrinho
+        clearCart();
+
+        // Aguardar um tempo para que o toast seja exibido antes de redirecionar
+        setTimeout(() => {
+          router.push("/");
+          update(null);
+        }, 2000); // Espera 2 segundos para redirecionar
+      }, 1000);
+    } catch (error) {
+      console.log(error);
+      setIsSubmitting(false);
+      // Mostrar toast de erro
+      toast.error("Erro ao realizar o pedido. Tente novamente.", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+        transition: Bounce,
+      });
+    }
   };
 
   return (
@@ -165,6 +220,20 @@ const StorePage = () => {
         </div>
       </div>
 
+      {isSubmitting && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <Triangle
+            visible={true}
+            height="120"
+            width="120"
+            color="#fff"
+            ariaLabel="triangle-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+          />
+        </div>
+      )}
+
       <DialogCloseButton
         title="Finalizar pedido"
         description="Deseja confirmar a compra?"
@@ -174,6 +243,8 @@ const StorePage = () => {
       >
         <TableCartProducts totalPrice={totalPrice} items={items} />
       </DialogCloseButton>
+
+      <ToastProvider />
     </div>
   );
 };
