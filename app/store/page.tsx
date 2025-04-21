@@ -1,23 +1,31 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { capitalizeFirstLastName } from "@/utils";
 import { useCategories } from "@/hooks/queries/categories.query";
 import { useUserStore } from "@/contexts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useProducts } from "@/hooks/queries/products.query";
+import { useProductsByCategoryId } from "@/hooks/queries/products.query";
 import { CardProducts } from "@/components/cardProducts";
 import { CartButton } from "@/components/cartButton";
 import { useCartStore } from "@/contexts/cart-store";
 
 const StorePage = () => {
-  const { user } = useUserStore();
-  const { data: categories } = useCategories();
-  const { data: products } = useProducts();
-  const { totalItems } = useCartStore();
-
   const [tabs, setTabs] = useState("0");
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+
+  const { data: categories } = useCategories();
+  const { data: products } = useProductsByCategoryId(categoryId);
+  const { totalItems } = useCartStore();
+  const { user } = useUserStore();
+
+  // Set the initial categoryId when categories data is loaded
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      setCategoryId(categories[0]._id);
+    }
+  }, [categories]);
 
   const handleCartClick = () => {
     alert(`totalItems: ${totalItems}`);
@@ -63,7 +71,13 @@ const StorePage = () => {
             defaultValue={String(tabs)}
             className="w-full h-[90%] flex flex-row overflow-hidden"
             orientation="vertical"
-            onValueChange={(value) => setTabs(value)}
+            onValueChange={(value) => {
+              setTabs(value);
+              // Update categoryId when tab changes
+              if (categories && categories.length > 0) {
+                setCategoryId(categories[Number(value)]._id);
+              }
+            }}
           >
             <TabsList className="flex flex-col h-auto w-auto py-7  overflow-y-auto bg-cyan-800/40 shadow-lg">
               {categories?.map((category: Category, index: number) => (

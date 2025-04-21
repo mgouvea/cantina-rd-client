@@ -5,7 +5,6 @@ import { capitalizeFirstLastName } from "@/utils/helpers";
 export const CardUser = ({
   name,
   telephone,
-  groupFamily,
   imageBase64,
   onUserSelect,
 }: User & { onUserSelect?: () => void }) => {
@@ -19,7 +18,7 @@ export const CardUser = ({
         alt={name}
         width={50}
         height={50}
-        className="inline-block size-14 rounded-full ring-2 ring-[#104e64]"
+        className="inline-block size-14 object-cover rounded-full ring-2 ring-[#104e64]"
       />
 
       <div className="flex flex-col gap-1">
@@ -29,7 +28,6 @@ export const CardUser = ({
 
         <div>
           <p className="text-light-800 text-sm">{telephone}</p>
-          <p className="text-light-800 text-[12px]">{groupFamily}</p>
         </div>
       </div>
     </div>
