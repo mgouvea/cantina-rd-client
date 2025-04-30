@@ -16,10 +16,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           className="flex items-center gap-0.5 cursor-pointer"
           onClick={handleBack}
         >
-          <ArrowLeftIcon size={20} />
-          <p className="text-light-800 text-md">Voltar</p>
+          <ArrowLeftIcon size={35} />
+          <p className="text-light-800 text-2xl">Voltar</p>
         </div>
-        <X color="red" onClick={handleBack} className="cursor-pointer" />
+        <X
+          color="red"
+          onClick={handleBack}
+          size={45}
+          className="cursor-pointer"
+        />
       </div>
       {children}
     </div>

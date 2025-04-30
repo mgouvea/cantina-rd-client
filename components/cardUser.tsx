@@ -18,16 +18,16 @@ export const CardUser = ({
         alt={name}
         width={50}
         height={50}
-        className="inline-block size-14 object-cover rounded-full ring-2 ring-[#104e64]"
+        className="inline-block size-16 object-cover rounded-full ring-2 ring-[#104e64]"
       />
 
       <div className="flex flex-col gap-1">
-        <p className="text-light-800 text-md font-semibold">
+        <p className="text-light-800 text-lg font-semibold">
           {capitalizeFirstLastName(name)}
         </p>
 
         <div>
-          <p className="text-light-800 text-sm">{telephone}</p>
+          <p className="text-light-800 text-md">{telephone}</p>
         </div>
       </div>
     </div>

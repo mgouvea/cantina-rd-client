@@ -55,7 +55,7 @@ const Page = () => {
   return (
     <div className="flex flex-col py-12 padding-container">
       <h1 className="text-2xl font-bold">Sócios Registrados</h1>
-      <p className="text-light-800 text-sm md:text-md">
+      <p className="text-light-800 text-sm md:text-lg">
         Selecione seu nome abaixo para registrar seu pedido.
       </p>
 
@@ -63,12 +63,12 @@ const Page = () => {
         <Input
           type="text"
           placeholder="Pesquise seu nome"
-          className="pr-8 bg-white shadow-md"
+          className="pr-8 bg-white shadow-md h-[50px] md:text-lg"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           disabled={isLoading}
         />
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-6 md:h-6 text-muted-foreground" />
       </div>
 
       <div className="mt-5 flex flex-col gap-2">

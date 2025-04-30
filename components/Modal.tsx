@@ -28,33 +28,33 @@ export function DialogCloseButton({
 }: ModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl">{title}</DialogTitle>
+          <DialogTitle className="text-3xl">{title}</DialogTitle>
           {description && (
-            <DialogDescription className="text-md">
+            <DialogDescription className="text-lg">
               {description}
             </DialogDescription>
           )}
         </DialogHeader>
         {children}
         <DialogFooter>
-          <div className="flex w-full flex-col gap-3">
+          <div className="flex w-full flex-col gap-4">
             <Button
               type="button"
               variant="default"
-              className="cursor-pointer text-lg"
+              className="cursor-pointer text-xl h-[55px]"
               onClick={onConfirm}
             >
-              Confirmar
+              Concluir compra
             </Button>
             <Button
               type="button"
               variant="secondary"
-              className="cursor-pointer text-lg"
+              className="cursor-pointer text-lg h-[55px]"
               onClick={() => onOpenChange?.(false)}
             >
-              Voltar
+              Continuar comprando
             </Button>
           </div>
         </DialogFooter>

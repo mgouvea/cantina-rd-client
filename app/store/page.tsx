@@ -84,7 +84,7 @@ const StorePage = () => {
           router.push("/");
           update(null);
         }, 2000); // Espera 2 segundos para redirecionar
-      }, 1000);
+      }, 750);
     } catch (error) {
       console.log(error);
       setIsSubmitting(false);
@@ -118,10 +118,10 @@ const StorePage = () => {
               Olá {capitalizeFirstLastName(user?.name)}
             </h3>
             <div>
-              <p className="text-light-800 text-md font-normal">
+              <p className="text-light-800 text-lg font-normal">
                 Comprou ou está pensando em comprar?
               </p>
-              <p className="text-light-800 text-md font-normal">
+              <p className="text-light-800 text-lg font-normal">
                 Adicione ao carrinho.
               </p>
             </div>
@@ -202,17 +202,17 @@ const StorePage = () => {
         </div>
         <div className="flex flex-col gap-2 w-full h-[1/3]">
           <div>
-            <p className="font-bold text-light-800 text-xl capitalize">
+            <p className="font-bold text-light-800 text-2xl capitalize">
               Valor total do carrinho
             </p>
-            <p className="font-medium text-light-800 text-md">
+            <p className="font-medium text-light-800 text-xl">
               R$ {totalPrice.toFixed(2)}
             </p>
           </div>
 
           <Button
             variant="default"
-            className="w-full btn-socio hover:brightness-90"
+            className="w-full btn-socio hover:brightness-90 h-[80px] text-xl"
             onClick={handleCartClick}
           >
             Avançar

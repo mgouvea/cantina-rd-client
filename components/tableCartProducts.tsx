@@ -20,19 +20,19 @@ export function TableCartProducts({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">Qtd</TableHead>
-          <TableHead className="w-[60%]">Produto</TableHead>
-          <TableHead className="text-right">Valor</TableHead>
+          <TableHead className="text-lg w-[100px]">Qtd</TableHead>
+          <TableHead className="text-lg w-[60%]">Produto</TableHead>
+          <TableHead className="text-lg text-right">Valor</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {items.map((item, index) => (
           <TableRow key={index}>
-            <TableCell className="font-medium text-center">
+            <TableCell className="font-medium text-lg text-center">
               {item.quantity}
             </TableCell>
-            <TableCell className="font-medium">{item.name}</TableCell>
-            <TableCell className="text-right">
+            <TableCell className="font-medium text-lg">{item.name}</TableCell>
+            <TableCell className="text-right text-lg">
               R$ {item.price * item.quantity}
             </TableCell>
           </TableRow>
@@ -40,8 +40,10 @@ export function TableCartProducts({
       </TableBody>
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={2}>Total</TableCell>
-          <TableCell className="text-right text-lg">
+          <TableCell colSpan={2} className="text-lg">
+            Total
+          </TableCell>
+          <TableCell className="text-right text-lg text-red-700">
             R$ {totalPrice.toFixed(2)}
           </TableCell>
         </TableRow>
