@@ -1,4 +1,4 @@
-export const formatarTelefone = (numero: string) => {
+export const PhoneMask = (numero: string) => {
   const numeros = numero.replace(/\D/g, "");
   const formatado = numeros.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
   return formatado;

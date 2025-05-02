@@ -2,11 +2,20 @@
 import React from "react";
 import { ArrowLeftIcon, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ModalClosePage } from "@/components/ModalClosePage";
+import { useCartStore } from "@/contexts/cart-store";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
+  const [open, setOpen] = React.useState(false);
+  const { clearCart } = useCartStore();
+
   const handleBack = () => {
     router.back();
+  };
+
+  const handleCleanCart = () => {
+    clearCart();
   };
 
   return (
@@ -21,12 +30,17 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </div>
         <X
           color="red"
-          onClick={handleBack}
+          onClick={() => setOpen(true)}
           className="cursor-pointer"
           size={45}
         />
       </div>
       {children}
+      <ModalClosePage
+        open={open}
+        setOpen={setOpen}
+        onCleanCart={handleCleanCart}
+      />
     </div>
   );
 };

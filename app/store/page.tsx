@@ -19,6 +19,8 @@ import { Triangle } from "react-loader-spinner";
 import { ToastProvider, toast } from "@/components/Toast";
 import { Bounce } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { ThumbsUp } from "lucide-react";
 
 const StorePage = () => {
   const router = useRouter();
@@ -26,6 +28,7 @@ const StorePage = () => {
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   const { data: categories } = useCategories();
   const { data: products } = useProductsByCategoryId(categoryId);
@@ -61,29 +64,22 @@ const StorePage = () => {
 
       await addOrder(payloadCart);
 
-      // Aguardar um pouco antes de esconder o loading e mostrar o toast
+      // Mostrar a animação de sucesso
+      setShowSuccessAnimation(true);
+
+      // Aguardar um pouco antes de esconder o loading
       setTimeout(() => {
         setIsSubmitting(false);
-        // Usar o toast diretamente
-        toast.success("Pedido realizado com sucesso!", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "colored",
-          transition: Bounce,
-        });
 
         // Limpar o carrinho
         clearCart();
 
-        // Aguardar um tempo para que o toast seja exibido antes de redirecionar
+        // Aguardar um tempo para que a animação seja exibida antes de redirecionar
         setTimeout(() => {
+          setShowSuccessAnimation(false);
           router.push("/");
           update(null);
-        }, 2000); // Espera 2 segundos para redirecionar
+        }, 4000); // Espera 4 segundos para redirecionar
       }, 750);
     } catch (error) {
       console.log(error);
@@ -111,7 +107,7 @@ const StorePage = () => {
             alt="avatar"
             width={76}
             height={76}
-            className="inline-block size-20 rounded-full ring-2 ring-gray-400"
+            className="inline-block size-27 rounded-full ring-2 ring-gray-400"
           />
           <div className="flex flex-col gap-2">
             <h3 className="text-light-800 text-md font-semibold">
@@ -164,10 +160,10 @@ const StorePage = () => {
                     alt={category.name}
                     width={50}
                     height={50}
-                    className="h-14 w-auto object-contain text-white"
+                    className="h-24 w-auto object-contain text-white"
                   />
                   <span
-                    className={`text-md md:text-base capitalize ${
+                    className={`text-md md:text-base capitalize text-wrap ${
                       index === Number(tabs)
                         ? "text-gray-800 font-bold"
                         : "text-white antialiased"
@@ -179,25 +175,43 @@ const StorePage = () => {
               ))}
             </TabsList>
 
-            {categories?.map((category: Category, index: number) => (
-              <TabsContent
-                key={category._id}
-                value={String(index)}
-                className="w-full h-full overflow-y-auto p-4"
-              >
-                <div className="flex-center flex-wrap gap-9 py-5">
-                  {products?.map((prod: Products) => (
-                    <CardProducts
-                      key={prod._id}
-                      _id={prod._id}
-                      name={prod.name}
-                      price={prod.price}
-                      imageBase64={prod.imageBase64}
-                    />
-                  ))}
-                </div>
-              </TabsContent>
-            ))}
+            <AnimatePresence mode="wait">
+              {categories?.map(
+                (category: Category, index: number) =>
+                  Number(tabs) === index && (
+                    <motion.div
+                      key={category._id}
+                      initial={{ x: 300, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ x: -300, opacity: 0 }}
+                      transition={{
+                        type: "tween",
+                        ease: "circIn",
+                        duration: 0.35,
+                      }}
+                      className="w-full h-full"
+                    >
+                      <TabsContent
+                        value={String(index)}
+                        className="w-full h-full overflow-y-auto p-4"
+                        forceMount
+                      >
+                        <div className="flex-center flex-wrap gap-8 py-5 md:grid md:grid-cols-2">
+                          {products?.map((prod: Products) => (
+                            <CardProducts
+                              key={prod._id}
+                              _id={prod._id}
+                              name={prod.name}
+                              price={prod.price}
+                              imageBase64={prod.imageBase64}
+                            />
+                          ))}
+                        </div>
+                      </TabsContent>
+                    </motion.div>
+                  )
+              )}
+            </AnimatePresence>
           </Tabs>
         </div>
         <div className="flex flex-col gap-2 w-full h-[1/3]">
@@ -214,6 +228,7 @@ const StorePage = () => {
             variant="default"
             className="w-full btn-socio hover:brightness-90 h-[80px] text-xl"
             onClick={handleCartClick}
+            disabled={totalItems === 0}
           >
             Avançar
           </Button>
@@ -221,15 +236,14 @@ const StorePage = () => {
       </div>
 
       {isSubmitting && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Triangle
-            visible={true}
-            height="120"
-            width="120"
-            color="#fff"
+            height="80"
+            width="80"
+            color="#4fa94d"
             ariaLabel="triangle-loading"
             wrapperStyle={{}}
-            wrapperClass=""
+            visible={true}
           />
         </div>
       )}
@@ -243,6 +257,55 @@ const StorePage = () => {
       >
         <TableCartProducts totalPrice={totalPrice} items={items} />
       </DialogCloseButton>
+
+      {/* Animação de sucesso */}
+      <AnimatePresence>
+        {showSuccessAnimation && (
+          <motion.div
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 1.5, opacity: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 200,
+              damping: 15,
+              duration: 0.8,
+            }}
+            className="fixed inset-0 bg-black/70 flex flex-col items-center justify-center z-50"
+          >
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="text-white text-3xl font-bold mb-6"
+            >
+              Pedido realizado com sucesso!
+            </motion.div>
+            <motion.div
+              animate={{
+                scale: [1, 1.2, 1],
+                rotate: [0, 10, -10, 0],
+              }}
+              transition={{
+                repeat: Infinity,
+                repeatType: "reverse",
+                duration: 1.5,
+              }}
+              className="bg-green-500 rounded-full p-8"
+            >
+              <ThumbsUp size={100} className="text-white" />
+            </motion.div>
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              className="text-white text-xl mt-6"
+            >
+              Redirecionando em alguns segundos...
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <ToastProvider />
     </div>

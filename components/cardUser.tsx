@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
-import { capitalizeFirstLastName } from "@/utils/helpers";
+import { capitalizeFirstLastName, PhoneMask } from "@/utils/helpers";
+import { User } from "@/types";
 
 export const CardUser = ({
   name,
@@ -27,7 +28,7 @@ export const CardUser = ({
         </p>
 
         <div>
-          <p className="text-light-800 text-md">{telephone}</p>
+          <p className="text-light-800 text-md">{PhoneMask(telephone)}</p>
         </div>
       </div>
     </div>

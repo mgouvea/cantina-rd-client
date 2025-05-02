@@ -2,9 +2,12 @@
 import React from "react";
 import { ArrowLeftIcon, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ModalClosePage } from "@/components/ModalClosePage";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
+  const [open, setOpen] = React.useState(false);
+
   const handleBack = () => {
     router.back();
   };
@@ -21,12 +24,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </div>
         <X
           color="red"
-          onClick={handleBack}
+          onClick={() => setOpen(true)}
           size={45}
           className="cursor-pointer"
         />
       </div>
       {children}
+      <ModalClosePage open={open} setOpen={setOpen} />
     </div>
   );
 };

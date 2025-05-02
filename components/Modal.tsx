@@ -14,6 +14,8 @@ interface ModalProps {
   description?: string;
   children?: React.ReactNode;
   open: boolean;
+  buttonConfirmText?: string;
+  buttonCancelText?: string;
   onOpenChange?: (open: boolean) => void;
   onConfirm?: () => void;
 }
@@ -23,12 +25,14 @@ export function DialogCloseButton({
   description,
   children,
   open,
+  buttonConfirmText,
+  buttonCancelText,
   onOpenChange,
   onConfirm,
 }: ModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="sm:max-w-xl [&_svg]:h-8 [&_svg]:w-8 [&_svg]:text-red-600">
         <DialogHeader>
           <DialogTitle className="text-3xl">{title}</DialogTitle>
           {description && (
@@ -43,10 +47,10 @@ export function DialogCloseButton({
             <Button
               type="button"
               variant="default"
-              className="cursor-pointer text-xl h-[55px]"
+              className="cursor-pointer btn-socio hover:brightness-90 text-xl h-[55px]"
               onClick={onConfirm}
             >
-              Concluir compra
+              {buttonConfirmText || "Concluir compra"}
             </Button>
             <Button
               type="button"
@@ -54,7 +58,7 @@ export function DialogCloseButton({
               className="cursor-pointer text-lg h-[55px]"
               onClick={() => onOpenChange?.(false)}
             >
-              Continuar comprando
+              {buttonCancelText || "Continuar comprando"}
             </Button>
           </div>
         </DialogFooter>
