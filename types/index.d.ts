@@ -9,6 +9,15 @@ interface User {
   updatedAt?: Date;
 }
 
+interface Visitor {
+  _id?: string;
+  name: string;
+  telephone: string;
+  churchCore: string;
+  visitCount?: number;
+  lastVisit?: Date;
+}
+
 interface Category {
   _id: string;
   name: string;

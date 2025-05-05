@@ -4,18 +4,26 @@ import { ArrowLeftIcon, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ModalClosePage } from "@/components/ModalClosePage";
 import { useCartStore } from "@/contexts/cart-store";
+import { useUserStore, useVisitorStore } from "@/contexts";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const { clearCart } = useCartStore();
+  const { update } = useUserStore();
+  const { updateVisitor } = useVisitorStore();
 
   const handleBack = () => {
     router.back();
+    clearCart();
+    update(null);
+    updateVisitor(null);
   };
 
   const handleCleanCart = () => {
     clearCart();
+    update(null);
+    updateVisitor(null);
   };
 
   return (

@@ -4,6 +4,11 @@ export const PhoneMask = (numero: string) => {
   return formatado;
 };
 
+export const removerMascaraTelefone = (telefone: string) => {
+  if (!telefone) return "";
+  return telefone.replace(/\D/g, "");
+};
+
 interface FormDataValidation {
   formData: Record<string, string | number | boolean>;
 }

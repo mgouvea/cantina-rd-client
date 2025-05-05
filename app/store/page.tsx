@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { capitalizeFirstLastName } from "@/utils";
 import { useCategories } from "@/hooks/queries/categories.query";
-import { useUserStore } from "@/contexts";
+import { useUserStore, useVisitorStore } from "@/contexts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useProductsByCategoryId } from "@/hooks/queries/products.query";
 import { CardProducts } from "@/components/cardProducts";
@@ -36,6 +36,7 @@ const StorePage = () => {
   const { totalItems, items, clearCart } = useCartStore();
   const totalPrice = useCartStore((state) => state.totalPrice);
   const { user, update } = useUserStore();
+  const { visitor } = useVisitorStore();
 
   const { mutateAsync: addOrder } = useAddOrder();
 
@@ -135,7 +136,7 @@ const StorePage = () => {
           />
           <div className="flex flex-col gap-2">
             <h3 className="text-light-800 text-md font-semibold">
-              Olá {capitalizeFirstLastName(user?.name)}
+              Olá {capitalizeFirstLastName(user?.name || visitor?.name)}
             </h3>
             <div>
               <p className="text-light-800 text-lg font-normal">
