@@ -30,6 +30,28 @@ export function DialogCloseButton({
   onOpenChange,
   onConfirm,
 }: ModalProps) {
+  const confirmClickedRef = React.useRef(false);
+
+  React.useEffect(() => {
+    confirmClickedRef.current = false;
+  }, [open]);
+
+  const handleConfirmClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (confirmClickedRef.current) {
+      console.log("Confirm already clicked, preventing duplicate action");
+      return;
+    }
+
+    confirmClickedRef.current = true;
+
+    if (onConfirm) {
+      onConfirm();
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl [&_svg]:h-8 [&_svg]:w-8 [&_svg]:text-red-600">
@@ -48,7 +70,7 @@ export function DialogCloseButton({
               type="button"
               variant="default"
               className="cursor-pointer btn-socio hover:brightness-90 text-xl h-[55px]"
-              onClick={onConfirm}
+              onClick={handleConfirmClick}
             >
               {buttonConfirmText || "Concluir compra"}
             </Button>

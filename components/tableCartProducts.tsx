@@ -43,7 +43,7 @@ export function TableCartProducts({
           <TableCell colSpan={2} className="text-lg">
             Total
           </TableCell>
-          <TableCell className="text-right text-lg text-red-700">
+          <TableCell className="text-right text-lg text-red-700 font-semibold">
             R$ {totalPrice.toFixed(2)}
           </TableCell>
         </TableRow>

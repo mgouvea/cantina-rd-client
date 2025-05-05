@@ -29,6 +29,7 @@ const StorePage = () => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const orderSubmittedRef = React.useRef(false);
 
   const { data: categories } = useCategories();
   const { data: products } = useProductsByCategoryId(categoryId);
@@ -45,23 +46,44 @@ const StorePage = () => {
     }
   }, [categories]);
 
+  // Reset the order submitted ref when the component mounts or when items change
+  useEffect(() => {
+    orderSubmittedRef.current = false;
+  }, [items]);
+
   const handleCartClick = () => {
     setOpen(true);
   };
 
   const handleConfirm = async () => {
+    // Use the ref to check if order was already submitted
+    if (orderSubmittedRef.current || isSubmitting) {
+      console.log(
+        "Order already submitted or in progress, preventing duplicate submission"
+      );
+      return;
+    }
+
+    // Immediately mark as submitted using the ref
+    orderSubmittedRef.current = true;
+
     const payloadCart = {
       buyerId: user?._id || "",
       groupFamilyId: user?.groupFamily || "",
       products: items,
       totalPrice: totalPrice,
       createdAt: new Date(),
+      // Add a unique timestamp to prevent duplicate orders
+      timestamp: new Date().getTime(),
     };
 
     try {
       setIsSubmitting(true);
       setOpen(false);
 
+      console.log("Submitting order with timestamp:", payloadCart.timestamp);
+
+      // Make the API call
       await addOrder(payloadCart);
 
       // Mostrar a animação de sucesso
@@ -79,11 +101,13 @@ const StorePage = () => {
           setShowSuccessAnimation(false);
           router.push("/");
           update(null);
-        }, 4000); // Espera 4 segundos para redirecionar
+        }, 3000); // Espera 3 segundos para redirecionar
       }, 750);
     } catch (error) {
-      console.log(error);
+      console.log("Error submitting order:", error);
       setIsSubmitting(false);
+      orderSubmittedRef.current = false; // Reset the ref on error
+
       // Mostrar toast de erro
       toast.error("Erro ao realizar o pedido. Tente novamente.", {
         position: "top-center",
