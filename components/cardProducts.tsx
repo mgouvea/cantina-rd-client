@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CircleMinus, CirclePlus } from "lucide-react";
 import { useCartStore } from "@/contexts/cart-store";
 
@@ -17,8 +17,14 @@ export const CardProducts = ({
   price,
   imageBase64,
 }: CardProductsProps) => {
-  const { addItem, removeItem } = useCartStore();
+  const { items, addItem, removeItem } = useCartStore();
   const [quantity, setQuantity] = useState(0);
+
+  // Update quantity when component mounts or when cart items change
+  useEffect(() => {
+    const cartItem = items.find(item => item.id === _id);
+    setQuantity(cartItem ? cartItem.quantity : 0);
+  }, [_id, items]);
 
   const handlePlus = () => {
     setQuantity((prev) => prev + 1);
