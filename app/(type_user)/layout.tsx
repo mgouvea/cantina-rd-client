@@ -3,12 +3,16 @@ import React from "react";
 import { ArrowLeftIcon, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ModalClosePage } from "@/components/ModalClosePage";
+import { useVisitorStore } from "@/contexts";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
 
+  const { setIsVisitorBuying } = useVisitorStore();
+
   const handleBack = () => {
+    setIsVisitorBuying(false);
     router.back();
   };
 

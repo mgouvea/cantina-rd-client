@@ -3,11 +3,15 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
+import { useVisitorStore } from "@/contexts";
 
 export const Home = () => {
   const router = useRouter();
 
+  const { setIsVisitorBuying } = useVisitorStore();
+
   const handleRedirectClick = (type: "socio" | "visitante") => {
+    setIsVisitorBuying(true);
     router.push(`/${type}`);
   };
 

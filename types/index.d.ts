@@ -62,3 +62,11 @@ export class CreateOrderDto {
   createdAt: Date;
   updatedAt?: Date;
 }
+
+export class CreateOrderVisitorDto {
+  buyerId: string;
+  products: ProductItem[];
+  totalPrice: number;
+  createdAt: Date;
+  updatedAt?: Date;
+}

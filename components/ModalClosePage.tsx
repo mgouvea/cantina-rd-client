@@ -1,6 +1,7 @@
 import React from "react";
 import { DialogCloseButton } from "./Modal";
 import { useRouter } from "next/navigation";
+import { useVisitorStore } from "@/contexts";
 
 export const ModalClosePage = ({
   open,
@@ -13,6 +14,8 @@ export const ModalClosePage = ({
 }) => {
   const router = useRouter();
 
+  const { setIsVisitorBuying } = useVisitorStore();
+
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
   };
@@ -24,6 +27,7 @@ export const ModalClosePage = ({
       onCleanCart();
     }
 
+    setIsVisitorBuying(false);
     router.push("/");
   };
 

@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { DialogCloseButton } from "@/components/Modal";
 import { TableCartProducts } from "@/components/tableCartProducts";
 import { Category, Products } from "@/types";
-import { useAddOrder } from "@/hooks/mutations";
+import { useAddOrder, useAddOrderVisitor } from "@/hooks/mutations";
 import { Triangle } from "react-loader-spinner";
 import { ToastProvider, toast } from "@/components/Toast";
 import { Bounce } from "react-toastify";
@@ -36,9 +36,10 @@ const StorePage = () => {
   const { totalItems, items, clearCart } = useCartStore();
   const totalPrice = useCartStore((state) => state.totalPrice);
   const { user, update } = useUserStore();
-  const { visitor } = useVisitorStore();
+  const { visitor, isVisitorBuying } = useVisitorStore();
 
   const { mutateAsync: addOrder } = useAddOrder();
+  const { mutateAsync: addOrderVisitor } = useAddOrderVisitor();
 
   // Set the initial categoryId when categories data is loaded
   useEffect(() => {
@@ -78,38 +79,44 @@ const StorePage = () => {
       timestamp: new Date().getTime(),
     };
 
+    const payloadCartVisitor = {
+      buyerId: visitor?._id || "",
+      products: items,
+      totalPrice: totalPrice,
+      createdAt: new Date(),
+      // Add a unique timestamp to prevent duplicate orders
+      timestamp: new Date().getTime(),
+    };
+
     try {
       setIsSubmitting(true);
       setOpen(false);
 
-      console.log("Submitting order with timestamp:", payloadCart.timestamp);
+      if (isVisitorBuying) {
+        await addOrderVisitor(payloadCartVisitor);
+        console.log("visitor", payloadCartVisitor);
+        console.log("visitorUser", visitor);
+      } else {
+        await addOrder(payloadCart);
+      }
 
-      // Make the API call
-      await addOrder(payloadCart);
-
-      // Mostrar a animação de sucesso
       setShowSuccessAnimation(true);
 
-      // Aguardar um pouco antes de esconder o loading
       setTimeout(() => {
         setIsSubmitting(false);
-
-        // Limpar o carrinho
         clearCart();
 
-        // Aguardar um tempo para que a animação seja exibida antes de redirecionar
         setTimeout(() => {
           setShowSuccessAnimation(false);
           router.push("/");
           update(null);
-        }, 3000); // Espera 3 segundos para redirecionar
+        }, 3000);
       }, 750);
     } catch (error) {
       console.log("Error submitting order:", error);
       setIsSubmitting(false);
-      orderSubmittedRef.current = false; // Reset the ref on error
+      orderSubmittedRef.current = false;
 
-      // Mostrar toast de erro
       toast.error("Erro ao realizar o pedido. Tente novamente.", {
         position: "top-center",
         autoClose: 2000,
