@@ -11,7 +11,9 @@ export const Home = () => {
   const { setIsVisitorBuying } = useVisitorStore();
 
   const handleRedirectClick = (type: "socio" | "visitante") => {
-    setIsVisitorBuying(true);
+    if (type === "visitante") {
+      setIsVisitorBuying(true);
+    }
     router.push(`/${type}`);
   };
 
