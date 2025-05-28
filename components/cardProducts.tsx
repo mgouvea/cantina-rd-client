@@ -6,7 +6,7 @@ import { useCartStore } from "@/contexts/cart-store";
 interface CardProductsProps {
   name: string;
   price: number;
-  imageBase64: string;
+  urlImage: string;
   _id: string;
   tag?: string;
 }
@@ -15,14 +15,14 @@ export const CardProducts = ({
   _id,
   name,
   price,
-  imageBase64,
+  urlImage,
 }: CardProductsProps) => {
   const { items, addItem, removeItem } = useCartStore();
   const [quantity, setQuantity] = useState(0);
 
   // Update quantity when component mounts or when cart items change
   useEffect(() => {
-    const cartItem = items.find(item => item.id === _id);
+    const cartItem = items.find((item) => item.id === _id);
     setQuantity(cartItem ? cartItem.quantity : 0);
   }, [_id, items]);
 
@@ -43,7 +43,7 @@ export const CardProducts = ({
     <div className="bg-white rounded-2xl max-w-[246px] flex flex-col items-center px-2 pb-3 pt-0 text-center shadow-lg">
       <div className="-mt-6">
         <Image
-          src={imageBase64 || "/cafe.svg"}
+          src={urlImage || "/cafe.svg"}
           alt={name}
           width={84}
           height={84}

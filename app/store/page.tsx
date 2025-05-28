@@ -135,7 +135,7 @@ const StorePage = () => {
       <div className="flex items-center justify-between gap-5 padding-container pr-10">
         <div className="flex items-center gap-5">
           <Image
-            src={user?.imageBase64 || "/avatar.png"}
+            src={user?.urlImage || "/avatar.png"}
             alt="avatar"
             width={76}
             height={76}
@@ -188,7 +188,7 @@ const StorePage = () => {
                   }`}
                 >
                   <Image
-                    src={category.imageBase64}
+                    src={category.urlImage}
                     alt={category.name}
                     width={50}
                     height={50}
@@ -235,7 +235,7 @@ const StorePage = () => {
                               _id={prod._id}
                               name={prod.name}
                               price={prod.price}
-                              imageBase64={prod.imageBase64}
+                              urlImage={prod.urlImage}
                             />
                           ))}
                         </div>

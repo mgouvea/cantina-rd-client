@@ -6,16 +6,17 @@ import { User } from "@/types";
 export const CardUser = ({
   name,
   telephone,
-  imageBase64,
+  urlImage,
   onUserSelect,
 }: User & { onUserSelect?: () => void }) => {
+  console.log("avatar", urlImage);
   return (
     <div
       className="flex items-center min-h-24 w-auto py-3 px-3 gap-5 border border-primary-100 bg-white rounded-2xl cursor-pointer shadow-sm"
       onClick={onUserSelect}
     >
       <Image
-        src={imageBase64 || "/avatar.png"}
+        src={urlImage || "/avatar.png"}
         alt={name}
         width={50}
         height={50}

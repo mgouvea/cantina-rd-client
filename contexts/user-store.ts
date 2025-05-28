@@ -4,7 +4,7 @@ import { create } from "zustand";
 export type User = {
   _id: string;
   name: string;
-  imageBase64?: string;
+  urlImage?: string;
   groupFamily: string;
 };
 
