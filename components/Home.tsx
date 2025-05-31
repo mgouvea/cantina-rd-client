@@ -17,11 +17,25 @@ export const Home = () => {
     router.push(`/${type}`);
   };
 
+  const handleFullscreen = () => {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else {
+      alert("This browser does not support fullscreen mode.");
+    }
+  };
+
   return (
     <div className="flex flex-col w-full h-screen px-12 md:px-28 lg:px-96 lg:pt-10">
       <div className="flex-center flex-col gap-2 pt-2 w-full h-[25%]">
         <h1 className="text-light-800 text-4xl">Bem vindo à</h1>
-        <Image src="/cantinaRD.png" width={150} height={150} alt="Logo" />
+        <Image
+          src="/cantinaRD.png"
+          width={150}
+          height={150}
+          alt="Logo"
+          onClick={handleFullscreen}
+        />
         <p className="text-light-800 text-3xl">Cantina RD</p>
       </div>
       <div className="flex flex-col items-center justify-between pt-16 pb-20 md:py-24 w-full h-[75%]">
