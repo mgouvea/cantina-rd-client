@@ -7,7 +7,7 @@ const Page = () => {
     if (document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen();
     } else {
-      alert("Fullscreen API not supported on this browser.");
+      alert("This browser does not support fullscreen mode.");
     }
   };
 
