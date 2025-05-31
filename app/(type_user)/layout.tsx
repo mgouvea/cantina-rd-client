@@ -1,19 +1,24 @@
 "use client";
-import React from "react";
+
+import React, { ReactNode, useState } from "react";
 import { ArrowLeftIcon, X } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { ModalClosePage } from "@/components/ModalClosePage";
+import { useRouter } from "next/navigation";
 import { useVisitorStore } from "@/contexts";
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const { setIsVisitorBuying } = useVisitorStore();
 
   const handleBack = () => {
     setIsVisitorBuying(false);
     router.back();
+  };
+
+  const handleOpenModal = () => {
+    setOpen(true);
   };
 
   return (
@@ -28,7 +33,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </div>
         <X
           color="red"
-          onClick={() => setOpen(true)}
+          onClick={handleOpenModal}
           size={45}
           className="cursor-pointer"
         />

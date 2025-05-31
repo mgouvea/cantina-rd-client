@@ -115,7 +115,7 @@ const Page = () => {
             </div>
           ) : (
             <div className="text-center py-8">
-              <p className="text-dark-300">Nenhum visitante cadastrado</p>
+              <p className="text-dark-300">Nenhum visitante recente</p>
             </div>
           )}
         </div>

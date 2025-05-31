@@ -21,13 +21,13 @@ export const ModalClosePage = ({
   };
 
   const handleConfirm = () => {
+    setIsVisitorBuying(false);
     setOpen(false);
 
     if (onCleanCart) {
       onCleanCart();
     }
 
-    setIsVisitorBuying(false);
     router.push("/");
   };
 
