@@ -27,7 +27,7 @@ export const Home = () => {
 
   return (
     <div className="flex flex-col w-full h-screen px-12 md:px-28 lg:px-96 md:py-12 lg:py-10">
-      <div className="flex-center flex-col gap-2 pt-2 w-full h-[25%]">
+      <div className="flex-center flex-col gap-2 pt-12 w-full h-[25%]">
         <h1 className="text-light-800 text-4xl">Bem vindo à</h1>
         <Image
           src="/cantinaRD.png"
@@ -38,10 +38,10 @@ export const Home = () => {
         />
         <p className="text-light-800 text-3xl">Cantina RD</p>
       </div>
-      <div className="flex flex-col items-center justify-between pt-16 pb-20 md:py-24 w-full h-[75%]">
+      <div className="flex flex-col items-center justify-between pt-18 pb-20 md:py-24 w-full h-[75%]">
         <div className="flex flex-col gap-3 w-full lg:w-[70%]">
           <p className="text-light-800 text-xl mb-2">Quem está comprando?</p>
-          <div className="flex flex-col gap-7">
+          <div className="flex flex-col gap-5">
             <Button
               variant="default"
               className="w-full btn-socio hover:brightness-90 h-[90px] text-xl"
