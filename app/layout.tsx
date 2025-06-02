@@ -11,6 +11,9 @@ const monaSans = Mona_Sans({
 export const metadata: Metadata = {
   title: "Cantina Systems",
   description: "Sistema de gerenciamento de pedidos",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
