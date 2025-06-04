@@ -13,8 +13,9 @@ export const CartButton = ({ onCartClick }: { onCartClick: () => void }) => {
         <ShoppingCart size={30} className="text-gray-500" />
       </div>
       {productCount > 0 && (
-        <span className="text-md font-medium text-light-800">
-          R$ {totalPrice.toFixed(2)}
+        <span className="text-md font-medium text-light-800 inline-flex items-center gap-1">
+          <span>R$</span>
+          <span>{totalPrice.toFixed(2)}</span>
         </span>
       )}
 

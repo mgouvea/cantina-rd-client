@@ -40,7 +40,7 @@ export const CardProducts = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl max-w-[226px] flex flex-col items-center px-2 pb-3 pt-0 text-center shadow-lg">
+    <div className="bg-white rounded-2xl max-w-[220px] flex flex-col items-center px-2 pb-3 pt-0 text-center shadow-lg">
       <div className="-mt-6">
         <Image
           src={urlImage}
@@ -63,7 +63,7 @@ export const CardProducts = ({
           </span>
         </p>
 
-        <div className="flex w-full justify-between items-center gap-4 bg-gray-200 px-4 py-2 rounded-lg">
+        <div className="flex w-full justify-between items-center gap-4 bg-gray-200 px-3 py-2 rounded-lg">
           <button className="cursor-pointer" onClick={handleMinus}>
             <CircleMinus size={40} color="#C11A00" />
           </button>

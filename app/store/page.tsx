@@ -131,9 +131,9 @@ const StorePage = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen py-12 gap-10 overflow-hidden">
-      <div className="flex items-center justify-between gap-5 padding-container pr-10">
-        <div className="flex items-center gap-5">
+    <div className="flex flex-col h-screen py-12 gap-9 overflow-hidden">
+      <div className="flex items-center justify-between gap-3 padding-container pr-1">
+        <div className="flex items-center gap-3">
           <Image
             src={user?.urlImage || "/avatar.png"}
             alt="avatar"
@@ -228,7 +228,7 @@ const StorePage = () => {
                         className="w-full h-full overflow-y-auto p-4"
                         forceMount
                       >
-                        <div className="flex-center flex-wrap gap-8 py-5 md:grid md:grid-cols-2">
+                        <div className="flex-center flex-wrap gap-5 py-5 md:grid md:grid-cols-2">
                           {products?.map((prod: Products) => (
                             <CardProducts
                               key={prod._id}
