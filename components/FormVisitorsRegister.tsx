@@ -20,6 +20,7 @@ export const FormVisitorsRegister = ({
   const [name, setName] = useState("");
   const [telephone, setTelephone] = useState("");
   const [churchCore, setChurchCore] = useState("");
+  const [isMember, setIsMember] = useState<null | boolean>(null);
 
   // Array com os nomes dos núcleos
   const nucleos = [
@@ -95,27 +96,59 @@ export const FormVisitorsRegister = ({
         />
       </div>
 
+      {/* Radio para sócio/não sócio */}
       <div className="space-y-2">
-        <Label htmlFor="churchCore" className="text-sm md:text-lg">
-          Núcleo
-        </Label>
-        <select
-          id="churchCore"
-          className="flex h-[60px] w-full rounded-md border border-input bg-background px-4 py-2 text-base md:text-lg ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          value={churchCore}
-          onChange={(e) => setChurchCore(e.target.value)}
-          required
-        >
-          <option value="" disabled>
-            Selecione seu núcleo
-          </option>
-          {nucleos.map((nucleo) => (
-            <option key={nucleo} value={nucleo}>
-              N. {nucleo}
-            </option>
-          ))}
-        </select>
+        <Label className="text-sm md:text-lg">Você é sócio?</Label>
+        <div className="flex gap-6 mt-1">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="isMember"
+              value="yes"
+              checked={isMember === true}
+              onChange={() => setIsMember(true)}
+              className="accent-blue-600 w-5 h-5"
+            />
+            Sócio
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="isMember"
+              value="no"
+              checked={isMember === false}
+              onChange={() => setIsMember(false)}
+              className="accent-blue-600 w-5 h-5"
+            />
+            Não sócio
+          </label>
+        </div>
       </div>
+
+      {/* Select de núcleo, só aparece se for sócio */}
+      {isMember === true && (
+        <div className="space-y-2">
+          <Label htmlFor="churchCore" className="text-sm md:text-lg">
+            Núcleo
+          </Label>
+          <select
+            id="churchCore"
+            className="flex h-[60px] w-full rounded-md border border-input bg-background px-4 py-2 text-base md:text-lg ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            value={churchCore}
+            onChange={(e) => setChurchCore(e.target.value)}
+            required={isMember === true}
+          >
+            <option value="" disabled>
+              Selecione seu núcleo
+            </option>
+            {nucleos.map((nucleo) => (
+              <option key={nucleo} value={nucleo}>
+                N. {nucleo}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <Button
         type="submit"

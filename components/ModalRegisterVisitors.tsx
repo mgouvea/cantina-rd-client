@@ -34,14 +34,14 @@ export const ModalRegisterVisitors = ({
   const handleSubmit = async (formData: {
     name: string;
     telephone: string;
-    churchCore: string;
+    churchCore?: string;
   }) => {
     try {
       setIsLoading(true);
       const payload = {
         name: formData.name,
         telephone: removerMascaraTelefone(formData.telephone),
-        churchCore: formData.churchCore,
+        churchCore: formData.churchCore || "",
       };
       console.log("Dados do formulário:", payload);
 
