@@ -228,7 +228,7 @@ const StorePage = () => {
                         className="w-full h-full overflow-y-auto p-4"
                         forceMount
                       >
-                        <div className="flex-center flex-wrap gap-5 py-5 md:grid md:grid-cols-2">
+                        <div className="gap-5 py-5 grid grid-cols-2">
                           {products?.map((prod: Products) => (
                             <CardProducts
                               key={prod._id}
