@@ -41,13 +41,13 @@ export const CardProducts = ({
 
   return (
     <div className="bg-white rounded-2xl max-w-[200px] sm:max-w-[210px] md:max-w-[236px] flex flex-col items-center px-1.5 sm:px-2 pb-2 sm:pb-3 pt-0 text-center shadow-lg transition-all">
-      <div className="-mt-6">
+      <div className="-mt-7">
         <Image
           src={urlImage}
           alt={name}
           width={64}
           height={64}
-          className="h-28 w-28 sm:h-24 sm:w-24 md:h-28 md:w-28 rounded-full object-cover mx-auto"
+          className="h-32 w-32 sm:h-24 sm:w-24 md:h-28 md:w-28 rounded-full object-cover mx-auto"
         />
       </div>
 
@@ -58,7 +58,7 @@ export const CardProducts = ({
       <div className="flex flex-col items-center justify-between gap-1 sm:gap-2 mt-2 sm:mt-3 w-full">
         <p className="text-xs sm:text-sm text-[#574f4d] antialiased">
           <span className="text-sm sm:text-sm font-bold">R$</span>{" "}
-          <span className="text-xl sm:text-2xl md:text-3xl font-extrabold antialiased">
+          <span className="text-2xl sm:text-2xl md:text-3xl font-extrabold antialiased">
             {price.toFixed(2)}
           </span>
         </p>
