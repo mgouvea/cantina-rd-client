@@ -139,17 +139,17 @@ const StorePage = () => {
             alt="avatar"
             width={76}
             height={76}
-            className="inline-block size-27 rounded-full ring-2 ring-gray-400"
+            className="inline-block size-25 rounded-full ring-2 ring-gray-400"
           />
           <div className="flex flex-col gap-2">
             <h3 className="text-light-800 text-md font-semibold">
               Olá {capitalizeFirstLastName(user?.name || visitor?.name)}
             </h3>
             <div>
-              <p className="text-light-800 text-lg font-normal">
+              <p className="text-light-800 text-md font-normal">
                 Comprou ou está pensando em comprar?
               </p>
-              <p className="text-light-800 text-lg font-normal">
+              <p className="text-light-800 text-md font-normal">
                 Adicione ao carrinho.
               </p>
             </div>

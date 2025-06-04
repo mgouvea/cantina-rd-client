@@ -40,7 +40,7 @@ export const CardProducts = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl max-w-[246px] flex flex-col items-center px-2 pb-3 pt-0 text-center shadow-lg">
+    <div className="bg-white rounded-2xl max-w-[226px] flex flex-col items-center px-2 pb-3 pt-0 text-center shadow-lg">
       <div className="-mt-6">
         <Image
           src={urlImage}
