@@ -19,10 +19,13 @@ import { ToastProvider, toast } from "@/components/Toast";
 import { Bounce } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ThumbsUp, ChevronRight } from "lucide-react";
+import { ThumbsUp, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
 import { CardProducts2 } from "@/components/cardProducts2";
 
 const StorePage = () => {
+  // Estado para mostrar dica de rolagem
+  const [showScrollHint, setShowScrollHint] = useState(true);
+
   const router = useRouter();
   const [tabs, setTabs] = useState("0");
   const [categoryId, setCategoryId] = useState<string | null>(null);
@@ -40,6 +43,12 @@ const StorePage = () => {
 
   const { mutateAsync: addOrder } = useAddOrder();
   const { mutateAsync: addOrderVisitor } = useAddOrderVisitor();
+
+  useEffect(() => {
+    setShowScrollHint(true);
+    const timer = setTimeout(() => setShowScrollHint(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Set the initial categoryId when categories data is loaded
   useEffect(() => {
@@ -205,45 +214,88 @@ const StorePage = () => {
               ))}
             </TabsList>
 
-            <AnimatePresence mode="wait">
-              {categories?.map(
-                (category: Category, index: number) =>
-                  Number(tabs) === index && (
+            <div className="relative w-full h-full">
+              {/* Overlay de orientação de rolagem */}
+              <AnimatePresence>
+                {showScrollHint && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/50"
+                  >
                     <motion.div
-                      key={category._id}
-                      initial={{ x: 300, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      exit={{ x: -300, opacity: 0 }}
-                      transition={{
-                        type: "tween",
-                        ease: "circIn",
-                        duration: 0.35,
-                      }}
-                      className="w-full h-full"
+                      animate={{ y: [0, -10, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.2 }}
+                      className="mb-4"
                     >
-                      <TabsContent
-                        value={String(index)}
-                        className="w-full h-full px-9 overflow-y-auto py-2"
-                        forceMount
-                      >
-                        {/* <div className="gap-5 py-2 grid grid-cols-2"> */}
-                        <div className="gap-5 py-2 flex flex-wrap">
-                          {products?.map((prod: Products) => (
-                            <CardProducts2
-                              key={prod._id}
-                              _id={prod._id}
-                              name={prod.name}
-                              price={prod.price}
-                              urlImage={prod.urlImage}
-                              description={prod.description}
-                            />
-                          ))}
-                        </div>
-                      </TabsContent>
+                      <ChevronUp
+                        size={48}
+                        className="text-white drop-shadow-lg"
+                      />
                     </motion.div>
-                  )
-              )}
-            </AnimatePresence>
+                    <span className="text-white text-2xl font-bold mb-4 drop-shadow-lg">
+                      Role para ver mais produtos
+                    </span>
+                    <motion.div
+                      animate={{ y: [0, 10, 0] }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1.2,
+                        delay: 0.6,
+                      }}
+                      className="mt-4"
+                    >
+                      <ChevronDown
+                        size={48}
+                        className="text-white drop-shadow-lg"
+                      />
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <AnimatePresence mode="wait">
+                {categories?.map(
+                  (category: Category, index: number) =>
+                    Number(tabs) === index && (
+                      <motion.div
+                        key={category._id}
+                        initial={{ x: 300, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: -300, opacity: 0 }}
+                        transition={{
+                          type: "tween",
+                          ease: "circIn",
+                          duration: 0.35,
+                        }}
+                        className="w-full h-full"
+                      >
+                        <TabsContent
+                          value={String(index)}
+                          className="w-full h-full px-9 overflow-y-auto py-2"
+                          forceMount
+                        >
+                          {/* <div className="gap-5 py-2 grid grid-cols-2"> */}
+                          <div className="gap-5 py-2 flex flex-wrap">
+                            {products?.map((prod: Products) => (
+                              <CardProducts2
+                                key={prod._id}
+                                _id={prod._id}
+                                name={prod.name}
+                                price={prod.price}
+                                urlImage={prod.urlImage}
+                                description={prod.description}
+                              />
+                            ))}
+                          </div>
+                        </TabsContent>
+                      </motion.div>
+                    )
+                )}
+              </AnimatePresence>
+            </div>
           </Tabs>
         </div>
         <div className="flex flex-col gap-2 w-full h-[1/3]">
