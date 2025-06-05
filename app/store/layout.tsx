@@ -27,7 +27,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="flex flex-col py-3 px-5 min-h-screen h-full w-auto bg-gray-100 overflow-y-hidden">
+    <div className="flex flex-col py-3 px-5 min-h-screen h-full w-auto bg-gray-100">
       <div className="flex justify-between w-full h-fit py-1">
         <div
           className="flex items-center gap-0.5 cursor-pointer"

@@ -24,11 +24,11 @@ export const ModalClosePage = ({
     setIsVisitorBuying(false);
     setOpen(false);
 
+    router.push("/");
+
     if (onCleanCart) {
       onCleanCart();
     }
-
-    router.push("/");
   };
 
   return (

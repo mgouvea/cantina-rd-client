@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="light">
-      <body className={`${monaSans.className} antialiased`}>
+      <body className={`${monaSans.className} antialiased overflow-y-hidden`}>
         <Providers>{children}</Providers>
       </body>
     </html>

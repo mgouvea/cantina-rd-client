@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 // Add the missing User type definition
 export type User = {
@@ -13,7 +14,14 @@ interface UserStore {
   update: (user: User | null) => void;
 }
 
-export const useUserStore = create<UserStore>((set) => ({
-  user: null,
-  update: (user) => set({ user }),
-}));
+export const useUserStore = create<UserStore>()(
+  persist(
+    (set) => ({
+      user: null,
+      update: (user) => set({ user }),
+    }),
+    {
+      name: "user-store", // chave do localStorage
+    }
+  )
+);

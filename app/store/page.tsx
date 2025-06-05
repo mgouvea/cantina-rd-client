@@ -148,7 +148,7 @@ const StorePage = () => {
             alt="avatar"
             width={96}
             height={96}
-            className="inline-block size-27 rounded-full ring-2 ring-gray-400 object-cover object-center"
+            className="inline-block size-29 rounded-full ring-2 ring-gray-400 object-cover object-center"
           />
           <div className="flex flex-col gap-2">
             <h3 className="text-light-800 text-4xl font-semibold">
