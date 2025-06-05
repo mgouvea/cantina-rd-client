@@ -39,6 +39,7 @@ interface Products {
   _id: string;
   name: string;
   description: string;
+  tag: string;
   price: number;
   categoryId: string;
   subcategoryId: string;
@@ -52,6 +53,15 @@ interface ProductItem {
   name: string;
   price: number;
   quantity: number;
+}
+
+export interface CardProductsProps {
+  name: string;
+  description?: string;
+  price: number;
+  urlImage: string;
+  _id: string;
+  tag?: string;
 }
 
 export class CreateOrderDto {

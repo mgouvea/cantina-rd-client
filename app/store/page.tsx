@@ -7,7 +7,6 @@ import { useCategories } from "@/hooks/queries/categories.query";
 import { useUserStore, useVisitorStore } from "@/contexts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useProductsByCategoryId } from "@/hooks/queries/products.query";
-import { CardProducts } from "@/components/cardProducts";
 import { CartButton } from "@/components/cartButton";
 import { useCartStore } from "@/contexts/cart-store";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,8 @@ import { ToastProvider, toast } from "@/components/Toast";
 import { Bounce } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ThumbsUp } from "lucide-react";
+import { ThumbsUp, ChevronRight } from "lucide-react";
+import { CardProducts2 } from "@/components/cardProducts2";
 
 const StorePage = () => {
   const router = useRouter();
@@ -137,22 +137,18 @@ const StorePage = () => {
           <Image
             src={user?.urlImage || "/avatar.png"}
             alt="avatar"
-            width={76}
-            height={76}
-            className="inline-block size-25 rounded-full ring-2 ring-gray-400"
+            width={96}
+            height={96}
+            className="inline-block size-27 rounded-full ring-2 ring-gray-400 object-cover object-center"
           />
           <div className="flex flex-col gap-2">
-            <h3 className="text-light-800 text-md font-semibold">
-              Olá {capitalizeFirstLastName(user?.name || visitor?.name)}
+            <h3 className="text-light-800 text-4xl font-semibold">
+              Olá,{" "}
+              {capitalizeFirstLastName(user?.name || visitor?.name, "first")}
             </h3>
-            <div>
-              <p className="text-light-800 text-md font-normal">
-                Comprou ou está pensando em comprar?
-              </p>
-              <p className="text-light-800 text-md font-normal">
-                Adicione ao carrinho.
-              </p>
-            </div>
+            <p className="text-light-800 text-lg font-normal">
+              Escolha seus produtos!
+            </p>
           </div>
         </div>
 
@@ -163,7 +159,7 @@ const StorePage = () => {
         )}
       </div>
       <div className="flex flex-col gap-3 md:px-3 overflow-hidden flex-1">
-        <h1 className="text-light-800 text-2xl font-semibold">Cardápio</h1>
+        <h3 className="text-light-800 text-md pl-3">Cardápio</h3>
 
         <div className="flex w-full h-full overflow-hidden">
           <Tabs
@@ -178,27 +174,29 @@ const StorePage = () => {
               }
             }}
           >
-            <TabsList className="flex flex-col h-auto w-auto py-7  overflow-y-auto bg-cyan-800/40 shadow-lg">
+            <TabsList className="flex flex-col h-auto w-auto py-5 overflow-y-auto bg-white shadow-lg">
               {categories?.map((category: Category, index: number) => (
                 <TabsTrigger
                   key={category._id}
                   value={String(index)}
-                  className={`flex-center flex-col w-[93%] ${
-                    index === Number(tabs) && "border-b-9 border-cyan-900"
+                  className={`flex-center flex-col justify-center items-center w-[95%] shadow-sm mb-3 ${
+                    index === Number(tabs)
+                      ? "border-b-9 border-green-600"
+                      : "border-2 border-gray-200"
                   }`}
                 >
                   <Image
                     src={category.urlImage}
                     alt={category.name}
-                    width={50}
-                    height={50}
-                    className="h-24 w-auto object-contain text-white"
+                    width={60}
+                    height={60}
+                    className="h-32 w-auto object-contain text-white"
                   />
                   <span
-                    className={`text-md md:text-base capitalize text-wrap ${
+                    className={`text-md md:text-base uppercase text-wrap ${
                       index === Number(tabs)
                         ? "text-gray-800 font-bold"
-                        : "text-white antialiased"
+                        : "text-gray-600 font-normal antialiased"
                     }`}
                   >
                     {category.name}
@@ -225,17 +223,19 @@ const StorePage = () => {
                     >
                       <TabsContent
                         value={String(index)}
-                        className="w-full h-full overflow-y-auto p-4"
+                        className="w-full h-full px-9 overflow-y-auto py-2"
                         forceMount
                       >
-                        <div className="gap-5 py-2 grid grid-cols-2">
+                        {/* <div className="gap-5 py-2 grid grid-cols-2"> */}
+                        <div className="gap-5 py-2 flex flex-wrap">
                           {products?.map((prod: Products) => (
-                            <CardProducts
+                            <CardProducts2
                               key={prod._id}
                               _id={prod._id}
                               name={prod.name}
                               price={prod.price}
                               urlImage={prod.urlImage}
+                              description={prod.description}
                             />
                           ))}
                         </div>
@@ -248,21 +248,24 @@ const StorePage = () => {
         </div>
         <div className="flex flex-col gap-2 w-full h-[1/3]">
           <div>
-            <p className="font-bold text-light-800 text-2xl capitalize">
-              Valor total do carrinho
+            <p className="font-medium text-light-800 text-2xl capitalize">
+              Valor total
             </p>
-            <p className="font-medium text-light-800 text-xl">
+            <p className="font-bold text-light-800 text-4xl">
               R$ {totalPrice.toFixed(2)}
             </p>
           </div>
 
           <Button
             variant="default"
-            className="w-full btn-socio hover:brightness-90 h-[80px] text-xl"
+            className="w-full btn-socio hover:brightness-90 h-[80px] text-xl flex items-center relative"
             onClick={handleCartClick}
             disabled={totalItems === 0}
           >
-            Avançar
+            <span className="mx-auto">Avançar</span>
+            <span className="absolute right-6 top-1/2 -translate-y-1/2">
+              <ChevronRight size={35} />
+            </span>
           </Button>
         </div>
       </div>

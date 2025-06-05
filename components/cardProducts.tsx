@@ -2,14 +2,7 @@ import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { CircleMinus, CirclePlus } from "lucide-react";
 import { useCartStore } from "@/contexts/cart-store";
-
-interface CardProductsProps {
-  name: string;
-  price: number;
-  urlImage: string;
-  _id: string;
-  tag?: string;
-}
+import { CardProductsProps } from "@/types";
 
 export const CardProducts = ({
   _id,

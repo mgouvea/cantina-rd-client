@@ -19,7 +19,10 @@ export const validarInputsObrigatorios = ({
   return Object.values(formData).every((value) => value !== "");
 };
 
-export function capitalizeFirstLastName(str?: string) {
+export function capitalizeFirstLastName(
+  str?: string,
+  type: "first" | "full" = "full"
+) {
   if (!str) return "";
 
   const words = str.split(" ");
@@ -34,7 +37,7 @@ export function capitalizeFirstLastName(str?: string) {
     words[words.length - 1].charAt(0).toUpperCase() +
     words[words.length - 1].slice(1).toLowerCase();
 
-  return `${firstName} ${lastName}`;
+  return type === "first" ? `${firstName}` : `${firstName} ${lastName}`;
 }
 
 export const NormalizeText = (text: string = ""): string => {
