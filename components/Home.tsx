@@ -47,7 +47,7 @@ export const Home = () => {
               className="w-full btn-socio hover:brightness-90 h-[90px] text-xl"
               onClick={() => handleRedirectClick("socio")}
             >
-              Sócio Realeza
+              Família Realeza
             </Button>
             <Button
               variant="outline"

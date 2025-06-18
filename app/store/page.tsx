@@ -39,7 +39,7 @@ const StorePage = () => {
   const { totalItems, items, clearCart } = useCartStore();
   const totalPrice = useCartStore((state) => state.totalPrice);
   const { user, update } = useUserStore();
-  const { visitor, isVisitorBuying } = useVisitorStore();
+  const { visitor, isVisitorBuying, setIsVisitorBuying } = useVisitorStore();
 
   const { mutateAsync: addOrder } = useAddOrder();
   const { mutateAsync: addOrderVisitor } = useAddOrderVisitor();
@@ -103,8 +103,6 @@ const StorePage = () => {
 
       if (isVisitorBuying) {
         await addOrderVisitor(payloadCartVisitor);
-        console.log("visitor", payloadCartVisitor);
-        console.log("visitorUser", visitor);
       } else {
         await addOrder(payloadCart);
       }
@@ -113,6 +111,7 @@ const StorePage = () => {
 
       setTimeout(() => {
         setIsSubmitting(false);
+        setIsVisitorBuying(false);
         clearCart();
 
         setTimeout(() => {
@@ -314,7 +313,7 @@ const StorePage = () => {
             onClick={handleCartClick}
             disabled={totalItems === 0}
           >
-            <span className="mx-auto">Avançar</span>
+            <span className="mx-auto">Revisar pedido</span>
             <span className="absolute right-6 top-1/2 -translate-y-1/2">
               <ChevronRight size={35} />
             </span>

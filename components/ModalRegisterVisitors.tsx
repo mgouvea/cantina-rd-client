@@ -25,7 +25,7 @@ export const ModalRegisterVisitors = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const { mutateAsync: addVisitor } = useAddVisitor();
-  const { updateVisitor } = useVisitorStore();
+  const { updateVisitor, setIsVisitorBuying } = useVisitorStore();
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
@@ -43,20 +43,20 @@ export const ModalRegisterVisitors = ({
         telephone: removerMascaraTelefone(formData.telephone),
         churchCore: formData.churchCore || "",
       };
-      console.log("Dados do formulário:", payload);
 
-      await addVisitor(payload);
+      const response = await addVisitor(payload);
 
       toast.success(
         "Registro realizado com sucesso! Você já pode fazer seu pedido."
       );
 
-      updateVisitor(payload);
+      updateVisitor(response);
+      setIsVisitorBuying(true);
       setOpen(false);
 
       setTimeout(() => {
         router.push("/store");
-      }, 1000);
+      }, 300);
     } catch (err) {
       console.error("Erro ao registrar:", err);
       toast.error("Ocorreu um erro ao tentar registrar. Tente novamente.");
