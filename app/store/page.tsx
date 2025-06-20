@@ -182,7 +182,7 @@ const StorePage = () => {
               }
             }}
           >
-            <TabsList className="flex flex-col h-auto w-auto py-5 overflow-y-auto bg-white shadow-lg">
+            <TabsList className="flex flex-col h-auto w-auto py-5 bg-white shadow-lg sticky top-0 self-start">
               {categories?.map((category: Category, index: number) => (
                 <TabsTrigger
                   key={category._id}
@@ -213,7 +213,7 @@ const StorePage = () => {
               ))}
             </TabsList>
 
-            <div className="relative w-full h-full">
+            <div className="relative w-full h-full overflow-y-auto">
               {/* Overlay de orientação de rolagem */}
               <AnimatePresence>
                 {showScrollHint && (
@@ -273,7 +273,7 @@ const StorePage = () => {
                       >
                         <TabsContent
                           value={String(index)}
-                          className="w-full h-full px-9 overflow-y-auto py-2"
+                          className="w-full h-full px-9 py-2"
                           forceMount
                         >
                           {/* <div className="gap-5 py-2 grid grid-cols-2"> */}

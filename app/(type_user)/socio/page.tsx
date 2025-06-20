@@ -28,23 +28,29 @@ const Page = () => {
   }, [search]);
 
   const filteredUsers = useMemo(() => {
+    // First determine which users to show based on search criteria
+    let result;
     if (!users || debouncedSearch.length < 3) {
-      return debouncedSearch.length > 0 && debouncedSearch.length < 3
-        ? []
-        : users || [];
+      result =
+        debouncedSearch.length > 0 && debouncedSearch.length < 3
+          ? []
+          : users || [];
+    } else {
+      const normalizedSearch = NormalizeText(debouncedSearch.trim());
+
+      result = users.filter((user: User) => {
+        const normalizedName = NormalizeText(user.name);
+        const normalizedTelephone = NormalizeText(user.telephone);
+
+        return (
+          normalizedName.includes(normalizedSearch) ||
+          normalizedTelephone.includes(normalizedSearch)
+        );
+      });
     }
 
-    const normalizedSearch = NormalizeText(debouncedSearch.trim());
-
-    return users.filter((user: User) => {
-      const normalizedName = NormalizeText(user.name);
-      const normalizedTelephone = NormalizeText(user.telephone);
-
-      return (
-        normalizedName.includes(normalizedSearch) ||
-        normalizedTelephone.includes(normalizedSearch)
-      );
-    });
+    // Then sort the filtered users alphabetically by name
+    return [...result].sort((a, b) => a.name.localeCompare(b.name));
   }, [users, debouncedSearch]);
 
   const handleUserSelect = (user: User) => {
@@ -71,7 +77,7 @@ const Page = () => {
         <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-6 md:h-6 text-muted-foreground" />
       </div>
 
-      <div className="mt-5 flex flex-col gap-2">
+      <div className="mt-5 flex flex-col gap-2 overflow-y-auto max-h-[calc(100vh-250px)] h-full">
         {isLoading ? (
           <div className="flex items-center justify-center mt-12">
             <MagnifyingGlass
