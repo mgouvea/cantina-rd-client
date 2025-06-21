@@ -53,7 +53,13 @@ const StorePage = () => {
   // Set the initial categoryId when categories data is loaded
   useEffect(() => {
     if (categories && categories.length > 0) {
-      setCategoryId(categories[0]._id);
+      // Usar a lista ordenada para obter o categoryId correto
+      const sortedCategories = [...categories].sort(
+        (a: Category, b: Category) => a.name.localeCompare(b.name)
+      );
+      setCategoryId(sortedCategories[0]._id);
+      // Também atualiza o valor da aba para 0 (primeira aba)
+      setTabs("0");
     }
   }, [categories]);
 
