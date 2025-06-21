@@ -31,13 +31,13 @@ export const CardProducts2 = ({
   };
 
   return (
-    <div className="flex bg-white rounded-2xl shadow-md w-[423px] h-[190px] px-3 py-3 items-center mb-2">
-      <div className="flex flex-col justify-between items-center w-[130px] h-full">
+    <div className="flex bg-white rounded-2xl shadow-md w-[400px] h-[180px] px-3 py-3 items-center mb-2">
+      <div className="flex flex-col justify-between items-center w-[120px] h-full">
         <Image
           src={urlImage}
           alt={name}
-          width={128}
-          height={128}
+          width={108}
+          height={108}
           className="object-contain mb-2"
         />
         <span className="text-2xl font-bold text-gray-800 antialiased mb-2">

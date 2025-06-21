@@ -151,9 +151,9 @@ const StorePage = () => {
           <Image
             src={user?.urlImage || "/avatar.png"}
             alt="avatar"
-            width={96}
-            height={96}
-            className="inline-block size-29 rounded-full ring-2 ring-gray-400 object-cover object-center"
+            width={86}
+            height={86}
+            className="inline-block size-26 rounded-full ring-2 ring-gray-400 object-cover object-center"
           />
           <div className="flex flex-col gap-2">
             <h3 className="text-light-800 text-4xl font-semibold">
@@ -213,7 +213,7 @@ const StorePage = () => {
                       alt={category.name}
                       width={60}
                       height={60}
-                      className="h-32 w-auto object-contain text-white"
+                      className="h-26 w-auto object-contain text-white"
                     />
                     <span
                       className={`text-md md:text-base uppercase text-wrap ${
@@ -228,7 +228,7 @@ const StorePage = () => {
                 ))}
             </TabsList>
 
-            <div className="relative w-full h-full overflow-y-auto">
+            <div className="relative w-full h-full overflow-y-auto overflow-x-hidden">
               {/* Overlay de orientação de rolagem */}
               <AnimatePresence>
                 {showScrollHint && (
@@ -293,10 +293,10 @@ const StorePage = () => {
                         >
                           <TabsContent
                             value={String(index)}
-                            className="w-full h-full px-9 py-2"
+                            className="w-full h-full px-3 py-2"
                             forceMount
                           >
-                            <div className="gap-5 py-2 flex flex-wrap">
+                            <div className="gap-5 py-1 flex flex-wrap">
                               {products
                                 ?.slice()
                                 .sort((a: Products, b: Products) =>
