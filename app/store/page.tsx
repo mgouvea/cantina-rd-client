@@ -178,39 +178,48 @@ const StorePage = () => {
               setTabs(value);
               // Update categoryId when tab changes
               if (categories && categories.length > 0) {
-                setCategoryId(categories[Number(value)]._id);
+                // Usar a lista ordenada para obter o categoryId correto
+                const sortedCategories = [...categories].sort(
+                  (a: Category, b: Category) => a.name.localeCompare(b.name)
+                );
+                setCategoryId(sortedCategories[Number(value)]._id);
               }
             }}
           >
             <TabsList className="flex flex-col h-auto w-auto py-5 bg-white shadow-lg sticky top-0 self-start">
-              {categories?.map((category: Category, index: number) => (
-                <TabsTrigger
-                  key={category._id}
-                  value={String(index)}
-                  className={`flex-center flex-col justify-center items-center w-[95%] shadow-sm mb-3 ${
-                    index === Number(tabs)
-                      ? "border-b-9 border-green-600"
-                      : "border-2 border-gray-200"
-                  }`}
-                >
-                  <Image
-                    src={category.urlImage}
-                    alt={category.name}
-                    width={60}
-                    height={60}
-                    className="h-32 w-auto object-contain text-white"
-                  />
-                  <span
-                    className={`text-md md:text-base uppercase text-wrap ${
+              {categories
+                ?.slice()
+                .sort((a: Category, b: Category) =>
+                  a.name.localeCompare(b.name)
+                )
+                .map((category: Category, index: number) => (
+                  <TabsTrigger
+                    key={category._id}
+                    value={String(index)}
+                    className={`flex-center flex-col justify-center items-center w-[95%] shadow-sm mb-3 ${
                       index === Number(tabs)
-                        ? "text-gray-800 font-bold"
-                        : "text-gray-600 font-normal antialiased"
+                        ? "border-b-9 border-green-600"
+                        : "border-2 border-gray-200"
                     }`}
                   >
-                    {category.name}
-                  </span>
-                </TabsTrigger>
-              ))}
+                    <Image
+                      src={category.urlImage}
+                      alt={category.name}
+                      width={60}
+                      height={60}
+                      className="h-32 w-auto object-contain text-white"
+                    />
+                    <span
+                      className={`text-md md:text-base uppercase text-wrap ${
+                        index === Number(tabs)
+                          ? "text-gray-800 font-bold"
+                          : "text-gray-600 font-normal antialiased"
+                      }`}
+                    >
+                      {category.name}
+                    </span>
+                  </TabsTrigger>
+                ))}
             </TabsList>
 
             <div className="relative w-full h-full overflow-y-auto">
@@ -235,7 +244,7 @@ const StorePage = () => {
                       />
                     </motion.div>
                     <span className="text-white text-2xl font-bold mb-4 drop-shadow-lg">
-                      Role para ver mais produtos
+                      Veja todos os produtos
                     </span>
                     <motion.div
                       animate={{ y: [0, 10, 0] }}
@@ -256,43 +265,52 @@ const StorePage = () => {
               </AnimatePresence>
 
               <AnimatePresence mode="wait">
-                {categories?.map(
-                  (category: Category, index: number) =>
-                    Number(tabs) === index && (
-                      <motion.div
-                        key={category._id}
-                        initial={{ x: 300, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: -300, opacity: 0 }}
-                        transition={{
-                          type: "tween",
-                          ease: "circIn",
-                          duration: 0.35,
-                        }}
-                        className="w-full h-full"
-                      >
-                        <TabsContent
-                          value={String(index)}
-                          className="w-full h-full px-9 py-2"
-                          forceMount
+                {categories
+                  ?.slice()
+                  .sort((a: Category, b: Category) =>
+                    a.name.localeCompare(b.name)
+                  )
+                  .map(
+                    (category: Category, index: number) =>
+                      Number(tabs) === index && (
+                        <motion.div
+                          key={category._id}
+                          initial={{ x: 300, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          exit={{ x: -300, opacity: 0 }}
+                          transition={{
+                            type: "tween",
+                            ease: "circIn",
+                            duration: 0.35,
+                          }}
+                          className="w-full h-full"
                         >
-                          {/* <div className="gap-5 py-2 grid grid-cols-2"> */}
-                          <div className="gap-5 py-2 flex flex-wrap">
-                            {products?.map((prod: Products) => (
-                              <CardProducts2
-                                key={prod._id}
-                                _id={prod._id}
-                                name={prod.name}
-                                price={prod.price}
-                                urlImage={prod.urlImage}
-                                description={prod.description}
-                              />
-                            ))}
-                          </div>
-                        </TabsContent>
-                      </motion.div>
-                    )
-                )}
+                          <TabsContent
+                            value={String(index)}
+                            className="w-full h-full px-9 py-2"
+                            forceMount
+                          >
+                            <div className="gap-5 py-2 flex flex-wrap">
+                              {products
+                                ?.slice()
+                                .sort((a: Products, b: Products) =>
+                                  a.name.localeCompare(b.name)
+                                )
+                                .map((prod: Products) => (
+                                  <CardProducts2
+                                    key={prod._id}
+                                    _id={prod._id}
+                                    name={prod.name}
+                                    price={prod.price}
+                                    urlImage={prod.urlImage}
+                                    description={prod.description}
+                                  />
+                                ))}
+                            </div>
+                          </TabsContent>
+                        </motion.div>
+                      )
+                  )}
               </AnimatePresence>
             </div>
           </Tabs>
