@@ -77,7 +77,7 @@ const Page = () => {
         <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-6 md:h-6 text-muted-foreground" />
       </div>
 
-      <div className="mt-5 flex flex-col gap-2 overflow-y-auto max-h-[calc(100vh-250px)] h-full">
+      <div className="mt-5 mb-12 flex flex-col gap-2 overflow-y-auto max-h-[calc(100vh-250px)] h-full">
         {isLoading ? (
           <div className="flex items-center justify-center mt-12">
             <MagnifyingGlass
