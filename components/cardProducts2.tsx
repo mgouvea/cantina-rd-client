@@ -31,13 +31,13 @@ export const CardProducts2 = ({
   };
 
   return (
-    <div className="flex bg-white rounded-2xl shadow-md w-[400px] h-[180px] px-3 py-3 items-center mb-2">
-      <div className="flex flex-col justify-between items-center w-[120px] h-full">
+    <div className="flex bg-white rounded-2xl shadow-md w-[430px] h-[196px] px-3 py-3 items-center mb-2">
+      <div className="flex flex-col justify-between items-center w-[126px] h-full">
         <Image
           src={urlImage}
           alt={name}
-          width={108}
-          height={108}
+          width={126}
+          height={126}
           className="object-contain mb-2"
         />
         <span className="text-2xl font-bold text-gray-800 antialiased mb-2">
@@ -84,25 +84,6 @@ export const CardProducts2 = ({
             <span className="text-xs font-medium text-gray-600">Adicionar</span>
           </button>
         </div>
-
-        {/* <div className="flex justify-between items-center h-12 mt-4 bg-white border border-gray-200 rounded-lg">
-          <button
-            className="px-1 border border-gray-200 rounded-lg h-full w-12 flex items-center justify-center"
-            onClick={handleMinus}
-            disabled={quantity === 0}
-          >
-            <Minus size={32} color={quantity === 0 ? "#d1d5db" : "#d10c0c"} />
-          </button>
-          <span className="mx-4 text-2xl font-bold text-gray-800 w-12 text-center select-none">
-            {quantity}
-          </span>
-          <button
-            className="px-1 border border-gray-200 rounded-lg h-full w-12 flex items-center justify-center"
-            onClick={handlePlus}
-          >
-            <Plus size={32} color="#0077b6" />
-          </button>
-        </div> */}
       </div>
     </div>
   );

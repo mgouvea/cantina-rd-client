@@ -47,14 +47,14 @@ export const Home = () => {
               className="w-full btn-socio hover:brightness-90 h-[90px] text-xl"
               onClick={() => handleRedirectClick("socio")}
             >
-              Família Realeza
+              Sou do Realeza
             </Button>
             <Button
               variant="outline"
               className="w-full btn-visitante h-[90px] text-xl"
               onClick={() => handleRedirectClick("visitante")}
             >
-              Visitante
+              Sou visitante
             </Button>
           </div>
         </div>

@@ -213,7 +213,7 @@ const StorePage = () => {
                       alt={category.name}
                       width={60}
                       height={60}
-                      className="h-26 w-auto object-contain text-white"
+                      className="h-30 w-auto object-contain text-white"
                     />
                     <span
                       className={`text-md md:text-base uppercase text-wrap ${
@@ -293,7 +293,7 @@ const StorePage = () => {
                         >
                           <TabsContent
                             value={String(index)}
-                            className="w-full h-full px-3 py-2"
+                            className="w-full h-full px-5 py-2"
                             forceMount
                           >
                             <div className="gap-5 py-1 flex flex-wrap">
