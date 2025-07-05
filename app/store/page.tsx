@@ -192,41 +192,50 @@ const StorePage = () => {
               }
             }}
           >
-            <TabsList className="flex flex-col h-auto w-auto py-5 bg-white shadow-lg sticky top-0 self-start">
-              {categories
-                ?.slice()
-                .sort((a: Category, b: Category) =>
-                  a.name.localeCompare(b.name)
-                )
-                .map((category: Category, index: number) => (
-                  <TabsTrigger
-                    key={category._id}
-                    value={String(index)}
-                    className={`flex-center flex-col justify-center items-center w-[95%] shadow-sm mb-3 ${
-                      index === Number(tabs)
-                        ? "border-b-9 border-green-600"
-                        : "border-2 border-gray-200"
-                    }`}
-                  >
-                    <Image
-                      src={category.urlImage}
-                      alt={category.name}
-                      width={60}
-                      height={60}
-                      className="h-32 w-auto object-contain text-white"
-                    />
-                    <span
-                      className={`text-md md:text-base uppercase text-wrap ${
+            <div
+              className="h-full overflow-y-auto bg-white shadow-lg hide-scrollbar"
+              style={{
+                maxHeight: "calc(100vh - 300px)",
+                scrollbarWidth: "none" /* Firefox */,
+                msOverflowStyle: "none" /* IE and Edge */,
+              }}
+            >
+              <TabsList className="flex flex-col h-auto w-auto py-5 bg-white">
+                {categories
+                  ?.slice()
+                  .sort((a: Category, b: Category) =>
+                    a.name.localeCompare(b.name)
+                  )
+                  .map((category: Category, index: number) => (
+                    <TabsTrigger
+                      key={category._id}
+                      value={String(index)}
+                      className={`flex-center flex-col justify-center items-center w-[95%] shadow-sm mb-3 ${
                         index === Number(tabs)
-                          ? "text-gray-800 font-bold"
-                          : "text-gray-600 font-normal antialiased"
+                          ? "border-b-9 border-green-600"
+                          : "border-2 border-gray-200"
                       }`}
                     >
-                      {category.name}
-                    </span>
-                  </TabsTrigger>
-                ))}
-            </TabsList>
+                      <Image
+                        src={category.urlImage}
+                        alt={category.name}
+                        width={60}
+                        height={60}
+                        className="h-32 w-auto object-contain text-white"
+                      />
+                      <span
+                        className={`text-md md:text-base uppercase text-wrap ${
+                          index === Number(tabs)
+                            ? "text-gray-800 font-bold"
+                            : "text-gray-600 font-normal antialiased"
+                        }`}
+                      >
+                        {category.name}
+                      </span>
+                    </TabsTrigger>
+                  ))}
+              </TabsList>
+            </div>
 
             <div className="relative w-full h-full overflow-y-auto overflow-x-hidden">
               {/* Overlay de orientação de rolagem */}

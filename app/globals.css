@@ -338,6 +338,15 @@
   animation: fadeIn 0.3s ease-in-out;
 }
 
+@utility hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
 /* @utility padding-container {
   @apply px-6 lg:px-20 3xl:px-32;
 } */
