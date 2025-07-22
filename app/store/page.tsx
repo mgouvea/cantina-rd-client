@@ -46,7 +46,7 @@ const StorePage = () => {
 
   useEffect(() => {
     setShowScrollHint(true);
-    const timer = setTimeout(() => setShowScrollHint(false), 2000);
+    const timer = setTimeout(() => setShowScrollHint(false), 1200);
     return () => clearTimeout(timer);
   }, []);
 
