@@ -141,6 +141,17 @@ export const FormVisitorsRegister = ({
     setTelephone(formattedValue);
   };
 
+  // Função para validar o nome (apenas letras, espaços e acentos)
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Regex que permite letras (incluindo acentuadas), espaços e hífen
+    const validNameRegex = /^[\p{L}\s-]*$/u;
+    const value = e.target.value;
+
+    if (value === "" || validNameRegex.test(value)) {
+      setName(value);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
@@ -152,7 +163,7 @@ export const FormVisitorsRegister = ({
           placeholder="Digite seu nome completo"
           className={inputClassName}
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={handleNameChange}
           required
         />
       </div>
