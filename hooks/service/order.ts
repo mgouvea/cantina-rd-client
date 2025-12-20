@@ -1,4 +1,4 @@
-import { http } from "./api";
+import { http } from "@/lib/http";
 import { CreateOrderDto, CreateOrderVisitorDto } from "@/types";
 
 export const AddNewOrder = async (payload: CreateOrderDto) => {

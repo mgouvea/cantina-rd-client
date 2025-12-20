@@ -1,5 +1,5 @@
 import { Visitor } from "@/types";
-import { http } from "./api";
+import { http } from "@/lib/http";
 
 export const CreateVisitor = async (visitor: Visitor) => {
   return (await http.post("visitors", visitor)).data;

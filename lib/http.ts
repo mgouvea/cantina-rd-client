@@ -24,21 +24,21 @@ http.interceptors.request.use(
   (error: AxiosError) => Promise.reject(error)
 );
 
-// Interceptor de RESPONSE
-http.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      authStorage.removeToken();
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
-      }
-    }
+// // Interceptor de RESPONSE
+// http.interceptors.response.use(
+//   (response) => response,
+//   (error: AxiosError) => {
+//     if (error.response?.status === 401) {
+//       authStorage.removeToken();
+//       if (typeof window !== "undefined") {
+//         window.location.href = "/login";
+//       }
+//     }
 
-    if (error.code === "ECONNABORTED" || !error.response) {
-      console.error("Erro de conexão com o servidor");
-    }
+//     if (error.code === "ECONNABORTED" || !error.response) {
+//       console.error("Erro de conexão com o servidor");
+//     }
 
-    return Promise.reject(error);
-  }
-);
+//     return Promise.reject(error);
+//   }
+// );

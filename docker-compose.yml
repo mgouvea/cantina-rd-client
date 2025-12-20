@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cantina-rd-client
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    networks:
+      - cantina-network
+
+networks:
+  cantina-network:
+    driver: bridge

@@ -1,4 +1,4 @@
-import { http } from "./api";
+import { http } from "@/lib/http";
 
 export const GetAllUsers = async () => {
   return (await http.get("users")).data;

@@ -1,4 +1,4 @@
-import { http } from "./api";
+import { http } from "@/lib/http";
 
 export const GetAllCategories = async () => {
   return (await http.get("categories")).data;

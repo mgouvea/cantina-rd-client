@@ -1,4 +1,4 @@
-import { http } from "./api";
+import { http } from "@/lib/http";
 
 export const GetAllProducts = async () => {
   return (await http.get("products")).data;

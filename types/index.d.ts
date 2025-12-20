@@ -80,3 +80,8 @@ export class CreateOrderVisitorDto {
   createdAt: Date;
   updatedAt?: Date;
 }
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
