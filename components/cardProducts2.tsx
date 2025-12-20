@@ -1,90 +1,140 @@
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { CardProductsProps } from "@/types";
-import { Minus, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { useCartStore } from "@/contexts/cart-store";
+import { CardProductsProps } from "@/types";
 
-export const CardProducts2 = ({
-  _id,
-  name,
-  description,
-  price,
-  urlImage,
-}: CardProductsProps) => {
+export const CardProducts2 = ({ _id, name, description, price, urlImage }: CardProductsProps) => {
   const { items, addItem, removeItem } = useCartStore();
-  const [quantity, setQuantity] = useState<number>(0);
+  const [quantity, setQuantity] = useState(0);
 
   useEffect(() => {
-    const cartItem = items.find((item) => item.id === _id);
+    const cartItem = items.find((i) => i.id === _id);
     setQuantity(cartItem ? cartItem.quantity : 0);
   }, [_id, items]);
 
   const handlePlus = () => {
-    setQuantity((prev) => prev + 1);
+    setQuantity((q) => q + 1);
     addItem({ id: _id, name, price });
   };
 
   const handleMinus = () => {
     if (quantity === 0) return;
-    setQuantity((prev) => prev - 1);
+    setQuantity((q) => q - 1);
     removeItem(_id);
   };
 
   return (
-    <div className="flex bg-white rounded-2xl shadow-md w-[430px] h-[196px] px-3 py-3 items-center mb-2">
-      <div className="flex flex-col justify-between items-center w-[126px] h-full">
-        <Image
-          src={urlImage}
-          alt={name}
-          width={126}
-          height={126}
-          className="object-contain mb-2"
-        />
-        <span className="text-2xl font-bold text-gray-800 antialiased mb-2">
-          R$ {price.toFixed(2).replace(".", ",")}
-        </span>
+    <div
+      className="
+        flex 
+        bg-white 
+        rounded-2xl 
+        shadow-md 
+        border 
+        border-gray-100
+        w-full
+        h-[170px]
+        px-4 
+        py-4 
+        gap-4
+        relative
+        active:scale-[0.99]
+        transition-all
+      "
+    >
+      {/* IMAGEM */}
+      <div className="w-[110px] flex flex-col justify-between items-center flex-shrink-0">
+        <div className="relative w-[100px] h-[100px] rounded-xl overflow-hidden bg-gray-50">
+          <Image src={urlImage} alt={name} fill className="object-contain p-2" />
+        </div>
+
+        <div className="flex items-center gap-1 mt-1">
+          <span className="text-sm text-gray-500">R$</span>
+          <span className="text-xl font-bold text-[#005f78]">
+            {price.toFixed(2).replace(".", ",")}
+          </span>
+        </div>
       </div>
 
-      <div className="flex-1 flex h-full w-[2/3] flex-col justify-between pl-3">
+      {/* TEXTO */}
+      <div className="flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="text-2xl font-bold text-gray-800 antialiased truncate">
-            {name}
-          </h3>
-          <p className="text-gray-500 text-base mt-1 antialiased">
-            {description}
-          </p>
+          <h3 className="text-lg font-bold text-gray-900 truncate">{name}</h3>
+          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{description}</p>
         </div>
-        <div className="flex justify-between items-center h-12 mt-4 bg-white border border-gray-200 rounded-lg">
+
+        {/* CONTROLES */}
+        <div className="flex items-center justify-between mt-3">
+          {/* BOTÃO REMOVER */}
           <button
-            className="flex items-center gap-1 px-1 h-full border border-gray-200 rounded-lg justify-center focus:outline-none focus:ring-2 focus:ring-blue-400"
             onClick={handleMinus}
             disabled={quantity === 0}
-            title="Remover"
+            className="
+              w-32 h-12
+              flex items-center justify-center gap-2
+              rounded-xl
+              border-2
+              text-sm font-medium
+              active:scale-95
+              transition-all
+              disabled:opacity-40 disabled:cursor-not-allowed
+            "
+            style={{
+              borderColor: quantity === 0 ? "#e5e7eb" : "#dc2626",
+              backgroundColor: quantity === 0 ? "#f9fafb" : "#fee2e2",
+            }}
           >
-            <Minus size={24} color={quantity === 0 ? "#d1d5db" : "#d10c0c"} />
-            <span
-              className={`text-xs font-medium ${
-                quantity === 0 ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
-              Remover
-            </span>
+            <Minus size={20} color={quantity === 0 ? "#9ca3af" : "#dc2626"} />
+            Remover
           </button>
 
-          <span className="mx-4 text-2xl font-bold text-gray-800 w-10 text-center select-none">
-            {quantity}
-          </span>
+          {/* QUANTIDADE */}
+          <span className="text-3xl font-bold w-12 text-center">{quantity}</span>
 
+          {/* BOTÃO ADICIONAR */}
           <button
-            className="flex items-center gap-1 px-1 h-full border border-gray-200 rounded-lg justify-center focus:outline-none focus:ring-2 focus:ring-blue-400"
             onClick={handlePlus}
-            title="Adicionar"
+            className="
+              w-32 h-12
+              flex items-center justify-center gap-2
+              rounded-xl
+              border-2
+              text-sm font-medium
+              active:scale-95
+              transition-all
+            "
+            style={{
+              borderColor: "#005f78",
+              backgroundColor: "#e6f7fc",
+              color: "#005f78",
+            }}
           >
-            <Plus size={24} color="#0077b6" />
-            <span className="text-xs font-medium text-gray-600">Adicionar</span>
+            <Plus size={20} color="#005f78" />
+            Adicionar
           </button>
         </div>
       </div>
+
+      {/* BADGE CARRINHO */}
+      {quantity > 0 && (
+        <div
+          className="
+            absolute 
+            -top-2 
+            -right-2 
+            w-8 h-8
+            rounded-full
+            flex items-center justify-center
+            shadow-lg
+          "
+          style={{
+            background: "linear-gradient(135deg, #005f78, #003d4d)",
+          }}
+        >
+          <ShoppingCart size={16} className="text-white" />
+        </div>
+      )}
     </div>
   );
 };
