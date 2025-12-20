@@ -1,5 +1,4 @@
 "use client";
-
 import { Home } from "@/components/Home";
 import { useLogin } from "@/hooks/mutations/login.mutation";
 import { authStorage } from "@/utils/auth";
@@ -15,18 +14,19 @@ const Page = () => {
     const token = authStorage.getToken();
 
     if (token) {
-      setTimeout(() => {
-        setIsAuthenticated(true);
-        setShowLoading(false);
-      }, 3000);
+      // Já tem token? Entra direto, sem delay!
+      setIsAuthenticated(true);
+      setShowLoading(false);
       return;
     }
 
+    // Não tem token? Faz login com delay de 3s
     const email = process.env.NEXT_PUBLIC_APP_EMAIL_LOGIN;
     const password = process.env.NEXT_PUBLIC_APP_PASSWORD_LOGIN;
 
     if (!email || !password) {
       console.error("Login credentials not found in environment variables");
+      setShowLoading(false);
       return;
     }
 
@@ -36,6 +36,7 @@ const Page = () => {
         onSuccess: (data) => {
           if (data?.access_token) {
             authStorage.setToken(data.access_token);
+            // Delay de 3s apenas no primeiro login
             setTimeout(() => {
               setIsAuthenticated(true);
               setShowLoading(false);

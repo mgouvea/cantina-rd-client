@@ -1,7 +1,7 @@
-import React from "react";
 import Image from "next/image";
 import { capitalizeFirstLastName, PhoneMask } from "@/utils/helpers";
 import { Visitor } from "@/types";
+import { Phone, ChevronRight, Church } from "lucide-react";
 
 export const CardVisitors = ({
   name,
@@ -11,26 +11,78 @@ export const CardVisitors = ({
 }: Visitor & { onUserSelect?: () => void }) => {
   return (
     <div
-      className="flex items-center min-h-24 w-auto py-3 px-3 gap-5 border border-primary-100 bg-white rounded-2xl cursor-pointer shadow-sm hover:shadow-md hover:bg-gray-50 transition-all"
       onClick={onUserSelect}
+      className="
+        flex 
+        items-center 
+        w-full
+        py-4 
+        px-4 
+        gap-4 
+        rounded-2xl 
+        shadow-sm 
+        bg-white
+        border 
+        border-gray-200
+        active:scale-[0.98]
+        active:shadow-inner
+        transition-all 
+        duration-150
+        touch-manipulation
+      "
+      style={{
+        WebkitTapHighlightColor: "transparent",
+      }}
     >
+      {/* Avatar */}
       <Image
-        src={"/avatar.png"}
+        src="/avatar.png"
         alt={name}
-        width={50}
-        height={50}
-        className="inline-block size-16 object-cover rounded-full ring-2 ring-[#104e64]"
+        width={64}
+        height={64}
+        className="
+          size-16 
+          rounded-full 
+          object-cover
+          ring-2 
+          ring-[#005f78]
+          shrink-0
+        "
       />
 
-      <div className="flex flex-col gap-1">
-        <p className="text-light-800 text-lg font-semibold">
-          {capitalizeFirstLastName(name)}
-        </p>
+      {/* Info */}
+      <div className="flex flex-col flex-1 gap-1">
+        <p className="text-gray-900 text-xl font-semibold">{capitalizeFirstLastName(name)}</p>
 
-        <div>
-          <p className="text-light-800 text-md">{PhoneMask(telephone)}</p>
-          <p className="text-light-800 text-md">{churchCore}</p>
-        </div>
+        {telephone && (
+          <div className="flex items-center gap-2 text-gray-600">
+            <Phone className="w-4 h-4 text-[#005f78]" />
+            <span className="text-base">{PhoneMask(telephone)}</span>
+          </div>
+        )}
+
+        {churchCore && (
+          <div className="flex items-center gap-2 text-gray-600">
+            <Church className="w-4 h-4 text-[#005f78]" />
+            <span className="text-base">{churchCore}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Seta de navegação */}
+      <div
+        className="
+          w-10 
+          h-10 
+          rounded-full
+          bg-gray-100
+          flex 
+          items-center 
+          justify-center
+          shrink-0
+        "
+      >
+        <ChevronRight className="w-6 h-6 text-gray-300" />
       </div>
     </div>
   );
