@@ -71,7 +71,7 @@ export const CardProducts2 = ({ _id, name, description, price, urlImage }: CardP
             onClick={handleMinus}
             disabled={quantity === 0}
             className="
-              w-32 h-12
+              w-28 h-12
               flex items-center justify-center gap-2
               rounded-xl
               border-2
@@ -85,18 +85,18 @@ export const CardProducts2 = ({ _id, name, description, price, urlImage }: CardP
               backgroundColor: quantity === 0 ? "#f9fafb" : "#fee2e2",
             }}
           >
-            <Minus size={20} color={quantity === 0 ? "#9ca3af" : "#dc2626"} />
+            <Minus size={18} color={quantity === 0 ? "#9ca3af" : "#dc2626"} />
             Remover
           </button>
 
           {/* QUANTIDADE */}
-          <span className="text-3xl font-bold w-12 text-center">{quantity}</span>
+          <span className="text-2xl font-bold w-12 text-center">{quantity}</span>
 
           {/* BOTÃO ADICIONAR */}
           <button
             onClick={handlePlus}
             className="
-              w-32 h-12
+              w-28 h-12
               flex items-center justify-center gap-2
               rounded-xl
               border-2
@@ -110,7 +110,7 @@ export const CardProducts2 = ({ _id, name, description, price, urlImage }: CardP
               color: "#005f78",
             }}
           >
-            <Plus size={20} color="#005f78" />
+            <Plus size={18} color="#005f78" />
             Adicionar
           </button>
         </div>
