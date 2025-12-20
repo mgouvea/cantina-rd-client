@@ -1,116 +1,115 @@
 "use client";
-
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { ThumbsUp, ChevronRight, ShoppingCart, Package } from "lucide-react";
+import { Triangle } from "react-loader-spinner";
+import { toast } from "@/components/Toast";
+import { Bounce } from "react-toastify";
+
 import { capitalizeFirstLastName } from "@/utils";
 import { useCategories } from "@/hooks/queries/categories.query";
-import { useUserStore, useVisitorStore } from "@/contexts";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useProductsByCategoryId } from "@/hooks/queries/products.query";
-import { CartButton } from "@/components/cartButton";
+import { useUserStore, useVisitorStore } from "@/contexts";
 import { useCartStore } from "@/contexts/cart-store";
+import { useAddOrder, useAddOrderVisitor } from "@/hooks/mutations";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DialogCloseButton } from "@/components/Modal";
 import { TableCartProducts } from "@/components/tableCartProducts";
-import { Category, Products } from "@/types";
-import { useAddOrder, useAddOrderVisitor } from "@/hooks/mutations";
-import { Triangle } from "react-loader-spinner";
-import { ToastProvider, toast } from "@/components/Toast";
-import { Bounce } from "react-toastify";
-import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { ThumbsUp, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
+import { CartButton } from "@/components/cartButton";
 import { CardProducts2 } from "@/components/cardProducts2";
+import { ToastProvider } from "@/components/Toast";
+import { Category, CreateOrderDto, CreateOrderVisitorDto, Products } from "@/types";
 
 const StorePage = () => {
-  // Estado para mostrar dica de rolagem
-  const [showScrollHint, setShowScrollHint] = useState(true);
-
   const router = useRouter();
-  const [tabs, setTabs] = useState("0");
+  const orderSubmittedRef = useRef(false);
+
+  const [activeTab, setActiveTab] = useState("0");
   const [categoryId, setCategoryId] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
-  const orderSubmittedRef = React.useRef(false);
 
   const { data: categories } = useCategories();
   const { data: products } = useProductsByCategoryId(categoryId);
-  const { totalItems, items, clearCart } = useCartStore();
-  const totalPrice = useCartStore((state) => state.totalPrice);
+  const { totalItems, items, clearCart, totalPrice } = useCartStore();
   const { user, update } = useUserStore();
   const { visitor, isVisitorBuying, setIsVisitorBuying } = useVisitorStore();
-
   const { mutateAsync: addOrder } = useAddOrder();
   const { mutateAsync: addOrderVisitor } = useAddOrderVisitor();
 
-  useEffect(() => {
-    setShowScrollHint(true);
-    const timer = setTimeout(() => setShowScrollHint(false), 1200);
-    return () => clearTimeout(timer);
-  }, []);
+  const currentUser = user || visitor;
+  const userName = currentUser?.name || "Usuário";
+  const avatarUrl = user?.urlImage || "/avatar.png";
 
-  // Set the initial categoryId when categories data is loaded
+  const sortedCategories = useMemo(
+    () =>
+      categories?.slice().sort((a: Category, b: Category) => a.name.localeCompare(b.name)) || [],
+    [categories]
+  );
+
+  const sortedProducts = useMemo(
+    () => products?.slice().sort((a: Products, b: Products) => a.name.localeCompare(b.name)) || [],
+    [products]
+  );
+
   useEffect(() => {
-    if (categories && categories.length > 0) {
-      // Usar a lista ordenada para obter o categoryId correto
-      const sortedCategories = [...categories].sort(
-        (a: Category, b: Category) => a.name.localeCompare(b.name)
-      );
+    if (sortedCategories.length > 0) {
       setCategoryId(sortedCategories[0]._id);
-      // Também atualiza o valor da aba para 0 (primeira aba)
-      setTabs("0");
+      setActiveTab("0");
     }
-  }, [categories]);
+  }, [sortedCategories]);
 
-  // Reset the order submitted ref when the component mounts or when items change
   useEffect(() => {
     orderSubmittedRef.current = false;
   }, [items]);
 
-  const handleCartClick = () => {
-    setOpen(true);
-  };
+  const handleCartClick = useCallback(() => {
+    setIsCartOpen(true);
+  }, []);
 
-  const handleConfirm = async () => {
-    // Use the ref to check if order was already submitted
-    if (orderSubmittedRef.current || isSubmitting) {
-      console.log(
-        "Order already submitted or in progress, preventing duplicate submission"
-      );
-      return;
-    }
+  const handleTabChange = useCallback(
+    (value: string) => {
+      setActiveTab(value);
+      if (sortedCategories.length > 0) {
+        setCategoryId(sortedCategories[Number(value)]._id);
+      }
+    },
+    [sortedCategories]
+  );
 
-    // Immediately mark as submitted using the ref
+  const handleConfirm = useCallback(async () => {
+    if (orderSubmittedRef.current || isSubmitting) return;
+
     orderSubmittedRef.current = true;
 
-    const payloadCart = {
-      buyerId: user?._id || "",
-      groupFamilyId: user?.groupFamily || "",
+    const basePayload = {
       products: items,
-      totalPrice: totalPrice,
-      createdAt: new Date(),
-      // Add a unique timestamp to prevent duplicate orders
-      timestamp: new Date().getTime(),
+      totalPrice,
     };
 
-    const payloadCartVisitor = {
+    const memberPayload: CreateOrderDto = {
+      ...basePayload,
+      buyerId: user?._id || "",
+      groupFamilyId: user?.groupFamily || "",
+    };
+
+    const visitorPayload: CreateOrderVisitorDto = {
+      ...basePayload,
       buyerId: visitor?._id || "",
-      products: items,
-      totalPrice: totalPrice,
-      createdAt: new Date(),
-      // Add a unique timestamp to prevent duplicate orders
-      timestamp: new Date().getTime(),
     };
 
     try {
       setIsSubmitting(true);
-      setOpen(false);
+      setIsCartOpen(false);
 
       if (isVisitorBuying) {
-        await addOrderVisitor(payloadCartVisitor);
+        await addOrderVisitor(visitorPayload);
       } else {
-        await addOrder(payloadCart);
+        await addOrder(memberPayload);
       }
 
       setShowSuccessAnimation(true);
@@ -127,7 +126,7 @@ const StorePage = () => {
         }, 3000);
       }, 750);
     } catch (error) {
-      console.log("Error submitting order:", error);
+      console.error("Error submitting order:", error);
       setIsSubmitting(false);
       orderSubmittedRef.current = false;
 
@@ -142,214 +141,193 @@ const StorePage = () => {
         transition: Bounce,
       });
     }
-  };
+  }, [
+    isSubmitting,
+    items,
+    totalPrice,
+    isVisitorBuying,
+    visitor,
+    user,
+    addOrderVisitor,
+    addOrder,
+    setIsVisitorBuying,
+    clearCart,
+    router,
+    update,
+  ]);
 
   return (
-    <div className="flex flex-col h-screen py-12 gap-9 overflow-hidden">
-      <div className="flex items-center justify-between gap-3 padding-container pr-1">
-        <div className="flex items-center gap-3">
-          <Image
-            src={user?.urlImage || "/avatar.png"}
-            alt="avatar"
-            width={86}
-            height={86}
-            className="inline-block size-26 rounded-full ring-2 ring-gray-400 object-cover object-center"
-          />
-          <div className="flex flex-col gap-2">
-            <h3 className="text-light-800 text-4xl font-semibold">
-              Olá,{" "}
-              {capitalizeFirstLastName(user?.name || visitor?.name, "first")}
-            </h3>
-            <p className="text-light-800 text-lg font-normal">
-              Escolha seus produtos!
-            </p>
+    <div className="flex flex-col h-screen py-8 gap-6 overflow-hidden bg-linear-to-br from-gray-50 via-white to-green-50/20">
+      {/* Header */}
+      <div className="padding-container">
+        <div className="flex items-center justify-between gap-4 rounded-3xl p-6">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Image
+                src={avatarUrl}
+                alt="avatar"
+                width={80}
+                height={80}
+                className="size-20 rounded-full ring-4 ring-[#005f78]/20 object-cover"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-gray-900 text-3xl font-bold">
+                Olá, {capitalizeFirstLastName(userName, "first")}!
+              </h3>
+              <p className="text-gray-600 text-base flex items-center gap-2">
+                <Package className="w-4 h-4" />
+                Escolha seus produtos
+              </p>
+            </div>
           </div>
+
+          {totalItems > 0 && (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="bg-white rounded-2xl p-4 border border-gray-200 shadow-lg"
+            >
+              <CartButton onCartClick={handleCartClick} />
+            </motion.div>
+          )}
+        </div>
+      </div>
+      {/* Main Content */}
+      <div className="flex flex-col gap-4 padding-container overflow-hidden flex-1">
+        <div className="flex items-center gap-3">
+          <div className="w-1 h-6 bg-linear-to-b from-[#005f78] to-[#003d4d] rounded-full" />
+          <h3 className="text-gray-900 text-2xl font-bold">Cardápio</h3>
         </div>
 
-        {totalItems > 0 && (
-          <div className="bg-white rounded-2xl p-5 shadow-xl border border-light-400">
-            <CartButton onCartClick={handleCartClick} />
-          </div>
-        )}
-      </div>
-      <div className="flex flex-col gap-3 md:px-3 overflow-hidden flex-1">
-        <h3 className="text-light-800 text-md pl-3">Cardápio</h3>
-
-        <div className="flex w-full h-full overflow-hidden">
+        <div className="flex w-full h-full overflow-hidden gap-4">
           <Tabs
-            defaultValue={String(tabs)}
-            className="w-full h-[90%] flex flex-row overflow-hidden"
+            value={activeTab}
+            className="w-full h-full flex flex-row overflow-hidden"
             orientation="vertical"
-            onValueChange={(value) => {
-              setTabs(value);
-              // Update categoryId when tab changes
-              if (categories && categories.length > 0) {
-                // Usar a lista ordenada para obter o categoryId correto
-                const sortedCategories = [...categories].sort(
-                  (a: Category, b: Category) => a.name.localeCompare(b.name)
-                );
-                setCategoryId(sortedCategories[Number(value)]._id);
-              }
-            }}
+            onValueChange={handleTabChange}
           >
+            {/* Categories Sidebar */}
             <div
               className="h-full overflow-y-auto bg-white shadow-lg hide-scrollbar"
               style={{
                 maxHeight: "calc(100vh - 300px)",
-                scrollbarWidth: "none" /* Firefox */,
-                msOverflowStyle: "none" /* IE and Edge */,
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
               }}
             >
               <TabsList className="flex flex-col h-auto w-auto py-5 bg-white">
-                {categories
-                  ?.slice()
-                  .sort((a: Category, b: Category) =>
-                    a.name.localeCompare(b.name)
-                  )
-                  .map((category: Category, index: number) => (
-                    <TabsTrigger
-                      key={category._id}
-                      value={String(index)}
-                      className={`flex-center flex-col justify-center items-center w-[95%] shadow-sm mb-3 ${
-                        index === Number(tabs)
-                          ? "border-b-9 border-green-600"
-                          : "border-2 border-gray-200"
+                {sortedCategories.map((category: Category, index: number) => (
+                  <TabsTrigger
+                    key={category._id}
+                    value={String(index)}
+                    className={`flex-center flex-col justify-center items-center w-[95%] shadow-sm mb-3 ${
+                      index === Number(activeTab)
+                        ? "border-b-9 border-green-600"
+                        : "border-2 border-gray-200"
+                    }`}
+                  >
+                    <Image
+                      src={category.urlImage}
+                      alt={category.name}
+                      width={60}
+                      height={60}
+                      className="h-32 w-auto object-contain text-white"
+                    />
+                    <span
+                      className={`text-md md:text-base uppercase text-wrap ${
+                        index === Number(activeTab)
+                          ? "text-gray-800 font-bold"
+                          : "text-gray-600 font-normal antialiased"
                       }`}
                     >
-                      <Image
-                        src={category.urlImage}
-                        alt={category.name}
-                        width={60}
-                        height={60}
-                        className="h-32 w-auto object-contain text-white"
-                      />
-                      <span
-                        className={`text-md md:text-base uppercase text-wrap ${
-                          index === Number(tabs)
-                            ? "text-gray-800 font-bold"
-                            : "text-gray-600 font-normal antialiased"
-                        }`}
-                      >
-                        {category.name}
-                      </span>
-                    </TabsTrigger>
-                  ))}
+                      {category.name}
+                    </span>
+                  </TabsTrigger>
+                ))}
               </TabsList>
             </div>
 
-            <div className="relative w-full h-full overflow-y-auto overflow-x-hidden">
-              {/* Overlay de orientação de rolagem */}
-              <AnimatePresence>
-                {showScrollHint && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/50"
-                  >
-                    <motion.div
-                      animate={{ y: [0, -10, 0] }}
-                      transition={{ repeat: Infinity, duration: 1.2 }}
-                      className="mb-4"
-                    >
-                      <ChevronUp
-                        size={48}
-                        className="text-white drop-shadow-lg"
-                      />
-                    </motion.div>
-                    <span className="text-white text-2xl font-bold mb-4 drop-shadow-lg">
-                      Veja todos os produtos
-                    </span>
-                    <motion.div
-                      animate={{ y: [0, 10, 0] }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 1.2,
-                        delay: 0.6,
-                      }}
-                      className="mt-4"
-                    >
-                      <ChevronDown
-                        size={48}
-                        className="text-white drop-shadow-lg"
-                      />
-                    </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
+            {/* Products Grid */}
+            <div className="relative w-full h-full overflow-y-auto overflow-x-hidden bg-white rounded-2xl shadow-lg border border-gray-100 custom-scrollbar">
               <AnimatePresence mode="wait">
-                {categories
-                  ?.slice()
-                  .sort((a: Category, b: Category) =>
-                    a.name.localeCompare(b.name)
-                  )
-                  .map(
-                    (category: Category, index: number) =>
-                      Number(tabs) === index && (
-                        <motion.div
-                          key={category._id}
-                          initial={{ x: 300, opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
-                          exit={{ x: -300, opacity: 0 }}
-                          transition={{
-                            type: "tween",
-                            ease: "circIn",
-                            duration: 0.35,
-                          }}
-                          className="w-full h-full"
-                        >
-                          <TabsContent
-                            value={String(index)}
-                            className="w-full h-full px-5 py-2"
-                            forceMount
-                          >
-                            <div className="gap-5 py-1 flex flex-wrap justify-center">
-                              {products
-                                ?.slice()
-                                .sort((a: Products, b: Products) =>
-                                  a.name.localeCompare(b.name)
-                                )
-                                .map((prod: Products) => (
-                                  <CardProducts2
-                                    key={prod._id}
-                                    _id={prod._id}
-                                    name={prod.name}
-                                    price={prod.price}
-                                    urlImage={prod.urlImage}
-                                    description={prod.description}
-                                  />
-                                ))}
-                            </div>
-                          </TabsContent>
-                        </motion.div>
-                      )
-                  )}
+                {sortedCategories.map((category: Category, index: number) =>
+                  Number(activeTab) === index ? (
+                    <motion.div
+                      key={category._id}
+                      initial={{ x: 300, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ x: -300, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      className="w-full h-full"
+                    >
+                      <TabsContent value={String(index)} className="w-full h-full p-6" forceMount>
+                        {sortedProducts.length > 0 ? (
+                          <div className="grid grid-cols-1 gap-4">
+                            {sortedProducts.map((prod: Products) => (
+                              <motion.div
+                                key={prod._id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3 }}
+                              >
+                                <CardProducts2
+                                  _id={prod._id}
+                                  name={prod.name}
+                                  price={prod.price}
+                                  urlImage={prod.urlImage}
+                                  description={prod.description}
+                                />
+                              </motion.div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                            <Package className="w-16 h-16 mb-4" />
+                            <p className="text-lg">Nenhum produto disponível</p>
+                          </div>
+                        )}
+                      </TabsContent>
+                    </motion.div>
+                  ) : null
+                )}
               </AnimatePresence>
             </div>
           </Tabs>
         </div>
-        <div className="flex flex-col gap-2 w-full h-[1/3]">
-          <div>
-            <p className="font-medium text-light-800 text-2xl capitalize">
-              Valor total
-            </p>
-            <p className="font-bold text-light-800 text-4xl">
-              R$ {totalPrice.toFixed(2)}
-            </p>
+      </div>
+
+      {/* Footer - Total & Checkout */}
+      <div className="padding-container pb-4">
+        <div className="bg-white rounded-3xl p-6 border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-gray-600 text-sm font-medium">Valor Total</p>
+              <p className="text-4xl font-bold bg-linear-to-r from-[#005f78] to-[#003d4d] bg-clip-text text-transparent">
+                R$ {totalPrice.toFixed(2).replace(".", ",")}
+              </p>
+            </div>
+            {totalItems > 0 && (
+              <div className="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full">
+                <ShoppingCart className="w-5 h-5 text-green-600" />
+                <span className="text-green-600 font-semibold">
+                  {totalItems} {totalItems === 1 ? "item" : "itens"}
+                </span>
+              </div>
+            )}
           </div>
 
           <Button
-            variant="default"
-            className="w-full btn-socio hover:brightness-90 h-[80px] text-xl flex items-center relative"
+            className="w-full h-16 text-lg font-semibold rounded-2xl shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            style={{
+              background:
+                totalItems > 0 ? "linear-gradient(135deg, #005f78 0%, #003d4d 100%)" : "#e5e7eb",
+            }}
             onClick={handleCartClick}
             disabled={totalItems === 0}
           >
-            <span className="mx-auto">Revisar pedido</span>
-            <span className="absolute right-6 top-1/2 -translate-y-1/2">
-              <ChevronRight size={35} />
-            </span>
+            <span>{totalItems === 0 ? "Adicione produtos ao carrinho" : "Revisar Pedido"}</span>
+            {totalItems > 0 && <ChevronRight className="w-6 h-6" />}
           </Button>
         </div>
       </div>
@@ -370,55 +348,43 @@ const StorePage = () => {
       <DialogCloseButton
         title="Finalizar pedido"
         description="Deseja confirmar a compra?"
-        open={open}
-        onOpenChange={setOpen}
+        open={isCartOpen}
+        onOpenChange={setIsCartOpen}
         onConfirm={handleConfirm}
       >
         <TableCartProducts totalPrice={totalPrice} items={items} />
       </DialogCloseButton>
 
-      {/* Animação de sucesso */}
+      {/* Success Animation */}
       <AnimatePresence>
         {showSuccessAnimation && (
           <motion.div
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 1.5, opacity: 0 }}
-            transition={{
-              type: "spring",
-              stiffness: 200,
-              damping: 15,
-              duration: 0.8,
-            }}
-            className="fixed inset-0 bg-black/70 flex flex-col items-center justify-center z-50"
+            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            className="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-50"
           >
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="text-white text-3xl font-bold mb-6"
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="text-white text-4xl font-bold mb-8 text-center px-4"
             >
               Pedido realizado com sucesso!
             </motion.div>
             <motion.div
-              animate={{
-                scale: [1, 1.2, 1],
-                rotate: [0, 10, -10, 0],
-              }}
-              transition={{
-                repeat: Infinity,
-                repeatType: "reverse",
-                duration: 1.5,
-              }}
-              className="bg-green-500 rounded-full p-8"
+              animate={{ scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+              className="bg-linear-to-br from-green-400 to-green-600 rounded-full p-10 shadow-2xl"
             >
-              <ThumbsUp size={100} className="text-white" />
+              <ThumbsUp size={120} className="text-white" />
             </motion.div>
             <motion.div
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-              className="text-white text-xl mt-6"
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="text-white text-xl mt-8 text-center px-4"
             >
               Redirecionando em alguns segundos...
             </motion.div>
@@ -427,6 +393,23 @@ const StorePage = () => {
       </AnimatePresence>
 
       <ToastProvider />
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: linear-gradient(to bottom, #005f78, #003d4d);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(to bottom, #003d4d, #002a38);
+        }
+      `}</style>
     </div>
   );
 };
