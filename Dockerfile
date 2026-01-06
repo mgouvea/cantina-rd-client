@@ -27,7 +27,7 @@ RUN yarn install --production --frozen-lockfile --network-timeout 600000
 
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/next.config.mjs ./
 
 EXPOSE 3000
 
