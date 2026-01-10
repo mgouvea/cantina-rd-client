@@ -1,9 +1,38 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
   images: {
     domains: ["res.cloudinary.com"],
   },
+
+  // --- Adicione esta seção para configurar os aliases do Webpack ---
+  webpack: (
+    config,
+    {
+      /* isServer */
+    }
+  ) => {
+    // Configura os aliases do Webpack para corresponder aos do tsconfig.json
+    // Como os aliases apontam para a raiz do projeto (./*), usamos __dirname diretamente.
+    config.resolve.alias["@"] = __dirname; // Aponta para a raiz do projeto
+    config.resolve.alias["@app"] = path.join(__dirname, "app");
+    config.resolve.alias["@components"] = path.join(__dirname, "components");
+    config.resolve.alias["@contexts"] = path.join(__dirname, "contexts");
+    config.resolve.alias["@mutations"] = path.join(__dirname, "hooks", "mutations");
+    config.resolve.alias["@queries"] = path.join(__dirname, "hooks", "queries");
+    config.resolve.alias["@services"] = path.join(__dirname, "services");
+    config.resolve.alias["@types"] = path.join(__dirname, "types");
+    config.resolve.alias["@utils"] = path.join(__dirname, "utils");
+
+    return config;
+  },
+  // --- Fim da seção de webpack ---
 
   async headers() {
     return [
