@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef, startTransition } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThumbsUp, ChevronRight, ShoppingCart, Package } from "lucide-react";
@@ -21,7 +21,7 @@ import { TableCartProducts } from "@/components/tableCartProducts";
 import { CartButton } from "@/components/cartButton";
 import { CardProducts2 } from "@/components/cardProducts2";
 import { ToastProvider } from "@/components/Toast";
-import { Category, CreateOrderDto, CreateOrderVisitorDto, Products } from "@/types";
+import { Category, Products, CreateOrderDto, CreateOrderVisitorDto } from "@/types";
 
 const StorePage = () => {
   const router = useRouter();
@@ -73,10 +73,12 @@ const StorePage = () => {
 
   const handleTabChange = useCallback(
     (value: string) => {
-      setActiveTab(value);
-      if (sortedCategories.length > 0) {
-        setCategoryId(sortedCategories[Number(value)]._id);
-      }
+      startTransition(() => {
+        setActiveTab(value);
+        if (sortedCategories.length > 0) {
+          setCategoryId(sortedCategories[Number(value)]._id);
+        }
+      });
     },
     [sortedCategories]
   );
@@ -85,46 +87,39 @@ const StorePage = () => {
     if (orderSubmittedRef.current || isSubmitting) return;
 
     orderSubmittedRef.current = true;
-
-    const basePayload = {
-      products: items,
-      totalPrice,
-    };
-
-    const memberPayload: CreateOrderDto = {
-      ...basePayload,
-      buyerId: user?._id || "",
-      groupFamilyId: user?.groupFamily || "",
-    };
-
-    const visitorPayload: CreateOrderVisitorDto = {
-      ...basePayload,
-      buyerId: visitor?._id || "",
-    };
+    setIsSubmitting(true);
+    setIsCartOpen(false);
 
     try {
-      setIsSubmitting(true);
-      setIsCartOpen(false);
-
       if (isVisitorBuying) {
+        const visitorPayload: CreateOrderVisitorDto = {
+          products: items,
+          totalPrice,
+          buyerId: visitor?._id || "",
+        };
         await addOrderVisitor(visitorPayload);
       } else {
+        const memberPayload: CreateOrderDto = {
+          products: items,
+          totalPrice,
+          buyerId: user?._id || "",
+          groupFamilyId: user?.groupFamily || "",
+        };
         await addOrder(memberPayload);
       }
 
       setShowSuccessAnimation(true);
+      setIsSubmitting(false);
+      setIsVisitorBuying(false);
+      clearCart();
 
       setTimeout(() => {
-        setIsSubmitting(false);
-        setIsVisitorBuying(false);
-        clearCart();
-
-        setTimeout(() => {
-          setShowSuccessAnimation(false);
+        setShowSuccessAnimation(false);
+        startTransition(() => {
           router.push("/");
           update(null);
-        }, 3000);
-      }, 750);
+        });
+      }, 3000);
     } catch (error) {
       console.error("Error submitting order:", error);
       setIsSubmitting(false);
@@ -258,18 +253,18 @@ const StorePage = () => {
                       initial={{ x: 300, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                       exit={{ x: -300, opacity: 0 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 35, duration: 0.2 }}
                       className="w-full h-full"
                     >
                       <TabsContent value={String(index)} className="w-full h-full p-6" forceMount>
                         {sortedProducts.length > 0 ? (
                           <div className="grid grid-cols-1 gap-4">
-                            {sortedProducts.map((prod: Products) => (
+                            {sortedProducts.map((prod: Products, idx: number) => (
                               <motion.div
                                 key={prod._id}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.3 }}
+                                transition={{ duration: 0.15, delay: idx * 0.02 }}
                               >
                                 <CardProducts2
                                   _id={prod._id}

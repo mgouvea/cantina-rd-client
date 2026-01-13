@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, startTransition } from "react";
 import { NormalizeText } from "@/utils";
 import { Search, Users } from "lucide-react";
 import { MagnifyingGlass } from "react-loader-spinner";
@@ -18,32 +18,49 @@ const Page = () => {
   const { update } = useUserStore();
 
   useEffect(() => {
+    router.prefetch("/store");
+  }, [router]);
+
+  useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(timer);
   }, [search]);
 
+  const sortedUsers = useMemo(() => {
+    if (!users) return [];
+    return [...users].sort((a: User, b: User) => a.name.localeCompare(b.name));
+  }, [users]);
+
+  const normalizedUsers = useMemo(() => {
+    return sortedUsers.map((user) => ({
+      ...user,
+      _normalizedName: NormalizeText(user.name),
+      _normalizedTelephone: NormalizeText(user.telephone),
+    }));
+  }, [sortedUsers]);
+
   const filteredUsers = useMemo(() => {
-    if (!users || debouncedSearch.length < 3) {
-      return debouncedSearch.length > 0 && debouncedSearch.length < 3
-        ? []
-        : [...(users || [])].sort((a: User, b: User) => a.name.localeCompare(b.name));
+    if (debouncedSearch.length > 0 && debouncedSearch.length < 2) {
+      return [];
+    }
+
+    if (debouncedSearch.length < 2) {
+      return normalizedUsers;
     }
 
     const normalizedSearch = NormalizeText(debouncedSearch.trim());
-    const filtered = users.filter((user: User) => {
-      const normalizedName = NormalizeText(user.name);
-      const normalizedTelephone = NormalizeText(user.telephone);
-      return (
-        normalizedName.includes(normalizedSearch) || normalizedTelephone.includes(normalizedSearch)
-      );
-    });
-
-    return filtered.sort((a: User, b: User) => a.name.localeCompare(b.name));
-  }, [users, debouncedSearch]);
+    return normalizedUsers.filter(
+      (user) =>
+        user._normalizedName.includes(normalizedSearch) ||
+        user._normalizedTelephone.includes(normalizedSearch)
+    );
+  }, [normalizedUsers, debouncedSearch]);
 
   const handleUserSelect = (user: User) => {
     update(user);
-    router.push("/store");
+    startTransition(() => {
+      router.push("/store");
+    });
   };
 
   const EmptyState = ({ message, subtitle }: { message: string; subtitle?: string }) => (
@@ -83,7 +100,7 @@ const Page = () => {
           <div className="relative">
             <Input
               type="text"
-              placeholder="Digite pelo menos 3 caracteres para buscar..."
+              placeholder="Digite pelo menos 2 caracteres para buscar..."
               className="pr-12 bg-white/80 backdrop-blur-sm shadow-lg border-2 border-gray-100 h-14 text-base rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -133,10 +150,10 @@ const Page = () => {
                 </div>
               ))}
             </div>
-          ) : debouncedSearch.length > 0 && debouncedSearch.length < 3 ? (
+          ) : debouncedSearch.length > 0 && debouncedSearch.length < 2 ? (
             <EmptyState
               message="Continue digitando..."
-              subtitle="Digite pelo menos 3 caracteres para buscar"
+              subtitle="Digite pelo menos 2 caracteres para buscar"
             />
           ) : debouncedSearch.length >= 3 ? (
             <EmptyState

@@ -6,7 +6,10 @@ export const useUsers = () => {
     queryKey: ["users"],
     queryFn: () => GetAllUsers(),
     retry: 1,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 20,
+    gcTime: 1000 * 60 * 35,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 };
 

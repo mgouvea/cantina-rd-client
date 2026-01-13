@@ -1,28 +1,29 @@
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useMemo, useCallback, startTransition } from "react";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { useCartStore } from "@/contexts/cart-store";
 import { CardProductsProps } from "@/types";
 
 export const CardProducts2 = ({ _id, name, description, price, urlImage }: CardProductsProps) => {
   const { items, addItem, removeItem } = useCartStore();
-  const [quantity, setQuantity] = useState(0);
 
-  useEffect(() => {
+  const quantity = useMemo(() => {
     const cartItem = items.find((i) => i.id === _id);
-    setQuantity(cartItem ? cartItem.quantity : 0);
-  }, [_id, items]);
+    return cartItem ? cartItem.quantity : 0;
+  }, [items, _id]);
 
-  const handlePlus = () => {
-    setQuantity((q) => q + 1);
-    addItem({ id: _id, name, price });
-  };
+  const handlePlus = useCallback(() => {
+    startTransition(() => {
+      addItem({ id: _id, name, price });
+    });
+  }, [_id, name, price, addItem]);
 
-  const handleMinus = () => {
+  const handleMinus = useCallback(() => {
     if (quantity === 0) return;
-    setQuantity((q) => q - 1);
-    removeItem(_id);
-  };
+    startTransition(() => {
+      removeItem(_id);
+    });
+  }, [quantity, _id, removeItem]);
 
   return (
     <div
