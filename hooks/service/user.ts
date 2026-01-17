@@ -1,7 +1,7 @@
 import { http } from "@/lib/http";
 
 export const GetAllUsers = async () => {
-  return (await http.get("users")).data;
+  return (await http.get("users/active")).data;
 };
 
 export const GetUserById = async (id: string) => {
