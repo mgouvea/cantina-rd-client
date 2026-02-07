@@ -3,13 +3,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import getChurchData from "@/data/churchCore";
+import { useVisitorByPhone } from "@/hooks/queries/visitors.query";
+import { removerMascaraTelefone } from "@/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { UserCheck, X, Check } from "lucide-react";
 
 interface FormVisitorsRegisterProps {
-  onSubmit: (data: {
-    name: string;
-    telephone: string;
-    churchCore: string;
-  }) => void;
+  onSubmit: (data: { name: string; telephone: string; churchCore: string }) => void;
+  onExistingVisitor?: (visitor: any) => void;
 }
 
 const inputClassName =
@@ -17,18 +18,23 @@ const inputClassName =
 
 export const FormVisitorsRegister = ({
   onSubmit,
+  onExistingVisitor,
 }: FormVisitorsRegisterProps) => {
   const [name, setName] = useState("");
   const [telephone, setTelephone] = useState("");
   const [churchCore, setChurchCore] = useState("");
   const [isMember, setIsMember] = useState<null | boolean>(null);
   const [selectedRegion, setSelectedRegion] = useState("");
-  const [availableNucleos, setAvailableNucleos] = useState<{ nome: string }[]>(
-    []
-  );
+  const [availableNucleos, setAvailableNucleos] = useState<{ nome: string }[]>([]);
+  const [debouncedPhone, setDebouncedPhone] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [foundVisitor, setFoundVisitor] = useState<any>(null);
 
   // Obter dados das regiões (apenas uma vez)
   const { arrayRegioes } = getChurchData();
+
+  // Query para buscar visitante por telefone
+  const { data: visitorData } = useVisitorByPhone(debouncedPhone);
 
   // Efeito para carregar núcleos quando a região muda
   useEffect(() => {
@@ -125,20 +131,51 @@ export const FormVisitorsRegister = ({
     } else if (numbers.length <= 6) {
       return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
     } else if (numbers.length <= 10) {
-      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 6)}-${numbers.slice(
-        6
-      )}`;
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 6)}-${numbers.slice(6)}`;
     } else {
-      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(
-        7,
-        11
-      )}`;
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
     }
   };
 
   const handleTelephoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatTelephone(e.target.value);
     setTelephone(formattedValue);
+  };
+
+  // Debounce para buscar visitante após digitar telefone completo
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const cleanPhone = removerMascaraTelefone(telephone);
+      // Telefone completo tem 11 dígitos (DDD + 9 dígitos)
+      if (cleanPhone.length === 11) {
+        setDebouncedPhone(cleanPhone);
+      } else {
+        setDebouncedPhone("");
+        setShowConfirmation(false);
+        setFoundVisitor(null);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [telephone]);
+
+  // Quando encontrar um visitante, mostrar confirmação
+  useEffect(() => {
+    if (visitorData && debouncedPhone) {
+      setFoundVisitor(visitorData);
+      setShowConfirmation(true);
+    }
+  }, [visitorData, debouncedPhone]);
+
+  const handleConfirmVisitor = () => {
+    if (foundVisitor && onExistingVisitor) {
+      onExistingVisitor(foundVisitor);
+    }
+  };
+
+  const handleRejectVisitor = () => {
+    setShowConfirmation(false);
+    setFoundVisitor(null);
   };
 
   // Função para validar o nome (apenas letras, espaços e acentos)
@@ -181,6 +218,61 @@ export const FormVisitorsRegister = ({
           required
         />
       </div>
+
+      {/* Confirmação de visitante existente */}
+      <AnimatePresence>
+        {showConfirmation && foundVisitor && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="relative overflow-hidden rounded-2xl border-2 border-[#005f78] bg-linear-to-br from-[#005f78]/5 via-white to-[#005f78]/10 p-6 shadow-lg"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#005f78]/5 rounded-full -mr-16 -mt-16" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#005f78]/5 rounded-full -ml-12 -mb-12" />
+
+            <div className="relative flex items-start gap-4">
+              <div className="shrink-0">
+                <div className="w-16 h-16 rounded-full bg-linear-to-br from-[#005f78] to-[#003d4d] flex items-center justify-center shadow-lg">
+                  <UserCheck className="w-8 h-8 text-white" />
+                </div>
+              </div>
+
+              <div className="flex-1">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Visitante encontrado!</h3>
+                <p className="text-lg text-gray-700 mb-4">
+                  <span className="font-semibold text-[#005f78]">{foundVisitor.name}</span>, é você?
+                </p>
+
+                <div className="flex gap-3">
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleConfirmVisitor}
+                    className="flex-1 h-14 rounded-xl bg-linear-to-r from-[#005f78] to-[#003d4d] text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center gap-2"
+                  >
+                    <Check className="w-5 h-5" />
+                    Sim, sou eu!
+                  </motion.button>
+
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleRejectVisitor}
+                    className="flex-1 h-14 rounded-xl bg-white border-2 border-gray-300 text-gray-700 font-semibold text-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <X className="w-5 h-5" />
+                    Não sou eu
+                  </motion.button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Radio para sócio/não sócio */}
       <div className="space-y-2">
@@ -264,10 +356,7 @@ export const FormVisitorsRegister = ({
         </>
       )}
 
-      <Button
-        type="submit"
-        className="w-full mt-6 text-xl h-[70px] btn-socio hover:brightness-90"
-      >
+      <Button type="submit" className="w-full mt-6 text-xl h-[70px] btn-socio hover:brightness-90">
         Registrar
       </Button>
     </form>

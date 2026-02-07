@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FormVisitorsRegister } from "./FormVisitorsRegister";
 import { Triangle } from "react-loader-spinner";
@@ -46,9 +46,7 @@ export const ModalRegisterVisitors = ({
 
       const response = await addVisitor(payload);
 
-      toast.success(
-        "Registro realizado com sucesso! Você já pode fazer seu pedido."
-      );
+      toast.success("Registro realizado com sucesso! Você já pode fazer seu pedido.");
 
       updateVisitor(response);
       setIsVisitorBuying(true);
@@ -63,6 +61,18 @@ export const ModalRegisterVisitors = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleExistingVisitor = (visitor: any) => {
+    toast.success(`Bem-vindo de volta, ${visitor.name}! Você já pode fazer seu pedido.`);
+
+    updateVisitor(visitor);
+    setIsVisitorBuying(true);
+    setOpen(false);
+
+    setTimeout(() => {
+      router.push("/store");
+    }, 300);
   };
 
   return (
@@ -86,12 +96,10 @@ export const ModalRegisterVisitors = ({
               wrapperStyle={{}}
               wrapperClass=""
             />
-            <p className="mt-4 text-center text-sm text-gray-500">
-              Registrando seus dados...
-            </p>
+            <p className="mt-4 text-center text-sm text-gray-500">Registrando seus dados...</p>
           </div>
         ) : (
-          <FormVisitorsRegister onSubmit={handleSubmit} />
+          <FormVisitorsRegister onSubmit={handleSubmit} onExistingVisitor={handleExistingVisitor} />
         )}
       </DialogContent>
     </Dialog>

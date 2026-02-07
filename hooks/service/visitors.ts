@@ -12,3 +12,7 @@ export const GetAllVisitors = async () => {
 export const GetVisitorById = async (id: string) => {
   return (await http.get(`visitors/${id}`)).data;
 };
+
+export const GetVisitorByPhone = async (phone: string) => {
+  return (await http.get(`visitors/phone/${phone}`)).data;
+};
