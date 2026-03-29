@@ -43,7 +43,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Google Fonts
               "font-src 'self' https://fonts.gstatic.com", // Google Fonts
               "img-src 'self' data: https://res.cloudinary.com", // Cloudinary
-              "connect-src 'self' https://res.cloudinary.com https://backend.cantina-rd.shop http://localhost:3333", // APIs permitidas
+              `connect-src 'self' https://res.cloudinary.com http://localhost:3333 ${process.env.NEXT_PUBLIC_APP_API || ""}`, // APIs permitidas
               "frame-ancestors 'none'", // Reforça X-Frame-Options
               "base-uri 'self'",
               "form-action 'self'",
