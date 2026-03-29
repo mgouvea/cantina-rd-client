@@ -68,7 +68,7 @@ export const Home = () => {
                 borderColor: "#005f78",
               }}
             >
-              Sou do Realeza
+              Sou do {process.env.NEXT_PUBLIC_APP_BUTTON_TITLE}
             </Button>
 
             {/* Botão Visitante */}
