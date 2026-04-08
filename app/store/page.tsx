@@ -48,12 +48,12 @@ const StorePage = () => {
   const sortedCategories = useMemo(
     () =>
       categories?.slice().sort((a: Category, b: Category) => a.name.localeCompare(b.name)) || [],
-    [categories]
+    [categories],
   );
 
   const sortedProducts = useMemo(
     () => products?.slice().sort((a: Products, b: Products) => a.name.localeCompare(b.name)) || [],
-    [products]
+    [products],
   );
 
   useEffect(() => {
@@ -80,7 +80,7 @@ const StorePage = () => {
         }
       });
     },
-    [sortedCategories]
+    [sortedCategories],
   );
 
   const handleConfirm = useCallback(async () => {
@@ -178,13 +178,9 @@ const StorePage = () => {
           </div>
 
           {totalItems > 0 && (
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="bg-white rounded-2xl p-4 border border-gray-200 shadow-lg"
-            >
+            <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-lg">
               <CartButton onCartClick={handleCartClick} />
-            </motion.div>
+            </div>
           )}
         </div>
       </div>
@@ -245,48 +241,36 @@ const StorePage = () => {
 
             {/* Products Grid */}
             <div className="relative w-full h-full overflow-y-auto overflow-x-hidden bg-white rounded-2xl shadow-lg border border-gray-100 custom-scrollbar">
-              <AnimatePresence mode="wait">
-                {sortedCategories.map((category: Category, index: number) =>
-                  Number(activeTab) === index ? (
-                    <motion.div
-                      key={category._id}
-                      initial={{ x: 300, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      exit={{ x: -300, opacity: 0 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 35, duration: 0.2 }}
-                      className="w-full h-full"
-                    >
-                      <TabsContent value={String(index)} className="w-full h-full p-6" forceMount>
-                        {sortedProducts.length > 0 ? (
-                          <div className="grid grid-cols-1 gap-4">
-                            {sortedProducts.map((prod: Products, idx: number) => (
-                              <motion.div
-                                key={prod._id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.15, delay: idx * 0.02 }}
-                              >
-                                <CardProducts2
-                                  _id={prod._id}
-                                  name={prod.name}
-                                  price={prod.price}
-                                  urlImage={prod.urlImage}
-                                  description={prod.description}
-                                />
-                              </motion.div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                            <Package className="w-16 h-16 mb-4" />
-                            <p className="text-lg">Nenhum produto disponível</p>
-                          </div>
-                        )}
-                      </TabsContent>
-                    </motion.div>
-                  ) : null
-                )}
-              </AnimatePresence>
+              {sortedCategories.map((category: Category, index: number) =>
+                Number(activeTab) === index ? (
+                  <TabsContent
+                    key={category._id}
+                    value={String(index)}
+                    className="w-full h-full p-6"
+                    forceMount
+                  >
+                    {sortedProducts.length > 0 ? (
+                      <div className="grid grid-cols-1 gap-4">
+                        {sortedProducts.map((prod: Products) => (
+                          <CardProducts2
+                            key={prod._id}
+                            _id={prod._id}
+                            name={prod.name}
+                            price={prod.price}
+                            urlImage={prod.urlImage}
+                            description={prod.description}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                        <Package className="w-16 h-16 mb-4" />
+                        <p className="text-lg">Nenhum produto disponível</p>
+                      </div>
+                    )}
+                  </TabsContent>
+                ) : null,
+              )}
             </div>
           </Tabs>
         </div>
@@ -313,7 +297,7 @@ const StorePage = () => {
           </div>
 
           <Button
-            className="w-full h-16 text-lg font-semibold rounded-2xl shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full h-16 text-lg font-semibold rounded-2xl shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{
               background:
                 totalItems > 0 ? "linear-gradient(135deg, #005f78 0%, #003d4d 100%)" : "#e5e7eb",

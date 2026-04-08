@@ -52,7 +52,7 @@ const Page = () => {
     return normalizedUsers.filter(
       (user) =>
         user._normalizedName.includes(normalizedSearch) ||
-        user._normalizedTelephone.includes(normalizedSearch)
+        user._normalizedTelephone.includes(normalizedSearch),
     );
   }, [normalizedUsers, debouncedSearch]);
 
@@ -64,7 +64,7 @@ const Page = () => {
   };
 
   const EmptyState = ({ message, subtitle }: { message: string; subtitle?: string }) => (
-    <div className="flex flex-col items-center justify-center py-16 px-4 animate-fade-in">
+    <div className="flex flex-col items-center justify-center py-16 px-4">
       <div className="w-20 h-20 rounded-full bg-linear-to-br from-green-100 to-green-50 flex items-center justify-center mb-4">
         <Users className="w-10 h-10 text-green-600" />
       </div>
@@ -90,18 +90,12 @@ const Page = () => {
 
       {/* Search Bar modernizada */}
       <div className="padding-container pb-4">
-        <div className="relative w-full lg:max-w-2xl group">
-          <div
-            className="absolute inset-0 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            style={{
-              background: "linear-gradient(to right, rgba(0, 95, 120, 0.2), rgba(0, 61, 77, 0.2))",
-            }}
-          />
+        <div className="relative w-full lg:max-w-2xl">
           <div className="relative">
             <Input
               type="text"
               placeholder="Digite pelo menos 2 caracteres para buscar..."
-              className="pr-12 bg-white/80 backdrop-blur-sm shadow-lg border-2 border-gray-100 h-14 text-base rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
+              className="pr-12 bg-white/80 backdrop-blur-sm shadow-lg border-2 border-gray-100 h-14 text-base rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-500/20"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               disabled={isLoading}
@@ -140,14 +134,9 @@ const Page = () => {
               />
             </div>
           ) : filteredUsers.length > 0 ? (
-            <div className="space-y-3 animate-fade-in">
+            <div className="space-y-3">
               {filteredUsers.map((user: User) => (
-                <div
-                  key={user._id}
-                  className="transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
-                >
-                  <CardUser {...user} onUserSelect={() => handleUserSelect(user)} />
-                </div>
+                <CardUser key={user._id} {...user} onUserSelect={() => handleUserSelect(user)} />
               ))}
             </div>
           ) : debouncedSearch.length > 0 && debouncedSearch.length < 2 ? (
@@ -184,19 +173,6 @@ const Page = () => {
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: linear-gradient(to bottom, #003d4d, #002a38);
-        }
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.4s ease-out;
         }
       `}</style>
     </div>

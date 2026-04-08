@@ -1,6 +1,6 @@
 const TOKEN_KEY = "access_token";
 const TOKEN_EXPIRY_KEY = "access_token_expiry";
-const TOKEN_DURATION_MS = 48 * 60 * 60 * 1000;
+const TOKEN_DURATION_MS = 4 * 24 * 60 * 60 * 1000;
 
 export const authStorage = {
   setToken: (token: string): void => {

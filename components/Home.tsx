@@ -4,16 +4,32 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { useVisitorStore } from "@/contexts";
+import { useUsers } from "@/hooks/queries";
+import { useCategories } from "@/hooks/queries/categories.query";
+import { useProducts } from "@/hooks/queries/products.query";
+import { useEffect, startTransition } from "react";
 
 export const Home = () => {
   const router = useRouter();
   const { setIsVisitorBuying } = useVisitorStore();
 
+  useUsers();
+  useCategories();
+  useProducts();
+
+  useEffect(() => {
+    router.prefetch("/socio");
+    router.prefetch("/visitante");
+    router.prefetch("/store");
+  }, [router]);
+
   const handleRedirectClick = (type: "socio" | "visitante") => {
     if (type === "visitante") {
       setIsVisitorBuying(true);
     }
-    router.push(`/${type}`);
+    startTransition(() => {
+      router.push(`/${type}`);
+    });
   };
 
   const handleFullscreen = () => {
