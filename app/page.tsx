@@ -54,7 +54,7 @@ const Page = () => {
   if (!isAuthenticated || showLoading) {
     return (
       <div className="w-full h-screen bg-white">
-        <LoadingAnimation showImage={true} />
+        <LoadingAnimation showImage={true} title="Cantina RD" titleSize="text-4xl" />
       </div>
     );
   }
