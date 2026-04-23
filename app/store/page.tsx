@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState, useEffect, useMemo, useCallback, useRef, startTransition } from "react";
+import { useState, useEffect, useCallback, useRef, startTransition } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThumbsUp, ChevronRight, ShoppingCart, Package } from "lucide-react";
@@ -21,6 +21,7 @@ import { TableCartProducts } from "@/components/tableCartProducts";
 import { CartButton } from "@/components/cartButton";
 import { CardProducts2 } from "@/components/cardProducts2";
 import { ToastProvider } from "@/components/Toast";
+import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { Category, Products, CreateOrderDto, CreateOrderVisitorDto } from "@/types";
 
 const StorePage = () => {
@@ -34,7 +35,7 @@ const StorePage = () => {
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   const { data: categories } = useCategories();
-  const { data: products } = useProductsByCategoryId(categoryId);
+  const { data: products, isLoading: isLoadingProducts } = useProductsByCategoryId(categoryId);
   const { totalItems, items, clearCart, totalPrice } = useCartStore();
   const { user, update } = useUserStore();
   const { visitor, isVisitorBuying, setIsVisitorBuying } = useVisitorStore();
@@ -45,23 +46,12 @@ const StorePage = () => {
   const userName = currentUser?.name || "Usuário";
   const avatarUrl = user?.urlImage || "/avatar.png";
 
-  const sortedCategories = useMemo(
-    () =>
-      categories?.slice().sort((a: Category, b: Category) => a.name.localeCompare(b.name)) || [],
-    [categories],
-  );
-
-  const sortedProducts = useMemo(
-    () => products?.slice().sort((a: Products, b: Products) => a.name.localeCompare(b.name)) || [],
-    [products],
-  );
-
   useEffect(() => {
-    if (sortedCategories.length > 0) {
-      setCategoryId(sortedCategories[0]._id);
+    if (categories && categories.length > 0 && !categoryId) {
+      setCategoryId(categories[0]._id);
       setActiveTab("0");
     }
-  }, [sortedCategories]);
+  }, [categories, categoryId]);
 
   useEffect(() => {
     orderSubmittedRef.current = false;
@@ -75,12 +65,12 @@ const StorePage = () => {
     (value: string) => {
       startTransition(() => {
         setActiveTab(value);
-        if (sortedCategories.length > 0) {
-          setCategoryId(sortedCategories[Number(value)]._id);
+        if (categories && categories.length > 0) {
+          setCategoryId(categories[Number(value)]._id);
         }
       });
     },
-    [sortedCategories],
+    [categories],
   );
 
   const handleConfirm = useCallback(async () => {
@@ -208,7 +198,7 @@ const StorePage = () => {
               }}
             >
               <TabsList className="flex flex-col h-auto w-auto py-5 bg-white">
-                {sortedCategories.map((category: Category, index: number) => (
+                {categories?.map((category: Category, index: number) => (
                   <TabsTrigger
                     key={category._id}
                     value={String(index)}
@@ -241,7 +231,7 @@ const StorePage = () => {
 
             {/* Products Grid */}
             <div className="relative w-full h-full overflow-y-auto overflow-x-hidden bg-white rounded-2xl shadow-lg border border-gray-100 custom-scrollbar">
-              {sortedCategories.map((category: Category, index: number) =>
+              {categories?.map((category: Category, index: number) =>
                 Number(activeTab) === index ? (
                   <TabsContent
                     key={category._id}
@@ -249,9 +239,11 @@ const StorePage = () => {
                     className="w-full h-full p-6"
                     forceMount
                   >
-                    {sortedProducts.length > 0 ? (
+                    {isLoadingProducts ? (
+                      <LoadingAnimation showImage={false} />
+                    ) : products && products.length > 0 ? (
                       <div className="grid grid-cols-1 gap-4">
-                        {sortedProducts.map((prod: Products) => (
+                        {products.map((prod: Products) => (
                           <CardProducts2
                             key={prod._id}
                             _id={prod._id}
