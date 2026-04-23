@@ -240,7 +240,7 @@ const StorePage = () => {
                     forceMount
                   >
                     {isLoadingProducts ? (
-                      <LoadingAnimation showImage={false} />
+                      <LoadingAnimation showImage={false} title="Carregando produtos..." />
                     ) : products && products.length > 0 ? (
                       <div className="grid grid-cols-1 gap-4">
                         {products.map((prod: Products) => (
