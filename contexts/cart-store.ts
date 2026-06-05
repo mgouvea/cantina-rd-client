@@ -25,9 +25,7 @@ export const useCartStore = create<CartState>((set) => ({
   addItem: (item) =>
     set((state) => {
       // Check if item already exists in cart
-      const existingItemIndex = state.items.findIndex(
-        (cartItem) => cartItem.id === item.id
-      );
+      const existingItemIndex = state.items.findIndex((cartItem) => cartItem.id === item.id);
 
       let updatedItems: CartItem[];
 
@@ -40,15 +38,13 @@ export const useCartStore = create<CartState>((set) => ({
         updatedItems = [...state.items, { ...item, quantity: 1 }];
       }
 
-      // Calculate new totals
-      const newTotalItems = updatedItems.reduce(
-        (sum, item) => sum + item.quantity,
-        0
-      );
-
-      const newTotalPrice = updatedItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
+      // Calculate new totals in a single reduce
+      const { newTotalItems, newTotalPrice } = updatedItems.reduce(
+        (acc, item) => ({
+          newTotalItems: acc.newTotalItems + item.quantity,
+          newTotalPrice: acc.newTotalPrice + item.price * item.quantity,
+        }),
+        { newTotalItems: 0, newTotalPrice: 0 },
       );
 
       return {
@@ -61,9 +57,7 @@ export const useCartStore = create<CartState>((set) => ({
   removeItem: (id) =>
     set((state) => {
       // Find the item
-      const existingItemIndex = state.items.findIndex(
-        (cartItem) => cartItem.id === id
-      );
+      const existingItemIndex = state.items.findIndex((cartItem) => cartItem.id === id);
 
       // If item doesn't exist, return current state
       if (existingItemIndex === -1) return state;
@@ -79,15 +73,13 @@ export const useCartStore = create<CartState>((set) => ({
         updatedItems[existingItemIndex].quantity -= 1;
       }
 
-      // Calculate new totals
-      const newTotalItems = updatedItems.reduce(
-        (sum, item) => sum + item.quantity,
-        0
-      );
-
-      const newTotalPrice = updatedItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
+      // Calculate new totals in a single reduce
+      const { newTotalItems, newTotalPrice } = updatedItems.reduce(
+        (acc, item) => ({
+          newTotalItems: acc.newTotalItems + item.quantity,
+          newTotalPrice: acc.newTotalPrice + item.price * item.quantity,
+        }),
+        { newTotalItems: 0, newTotalPrice: 0 },
       );
 
       return {
