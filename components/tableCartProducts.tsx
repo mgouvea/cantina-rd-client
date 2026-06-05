@@ -47,9 +47,9 @@ export function TableCartProducts({
               </TableCell>
             </TableRow>
           ) : (
-            items.map((item, index) => (
+            items.map((item) => (
               <TableRow
-                key={index}
+                key={item.id}
                 className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
               >
                 <TableCell className="text-center py-4">

@@ -46,7 +46,7 @@ export const CardProducts2 = memo(
       "
       >
         {/* IMAGEM */}
-        <div className="w-[110px] flex flex-col justify-between items-center flex-shrink-0">
+        <div className="w-[110px] flex flex-col justify-between items-center shrink-0">
           <div className="relative w-[100px] h-[100px] rounded-xl overflow-hidden bg-gray-50">
             <Image
               src={urlImage}

@@ -47,11 +47,13 @@ const StorePage = () => {
   const avatarUrl = user?.urlImage || "/avatar.png";
 
   useEffect(() => {
-    if (categories && categories.length > 0 && !categoryId) {
-      setCategoryId(categories[0]._id);
-      setActiveTab("0");
+    if (categories && categories.length > 0) {
+      if (!categoryId || !categories.find((c: Category) => c._id === categoryId)) {
+        setCategoryId(categories[0]._id);
+        setActiveTab("0");
+      }
     }
-  }, [categories, categoryId]);
+  }, [categories]);
 
   useEffect(() => {
     orderSubmittedRef.current = false;

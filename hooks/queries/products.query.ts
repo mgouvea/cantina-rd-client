@@ -5,7 +5,7 @@ export const useProducts = () => {
   return useQuery({
     queryKey: ["products"],
     queryFn: () => GetAllProducts(),
-    retry: 1,
+    retry: 3,
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -15,7 +15,8 @@ export const useProductsByCategoryId = (id: string | null) => {
     queryKey: ["products", id],
     queryFn: () => GetProductByCategoryId(id!),
     enabled: !!id,
-    retry: 1,
+    retry: 3,
+    refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5,
   });
 };
