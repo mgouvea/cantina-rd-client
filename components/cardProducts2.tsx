@@ -48,7 +48,15 @@ export const CardProducts2 = memo(
         {/* IMAGEM */}
         <div className="w-[110px] flex flex-col justify-between items-center flex-shrink-0">
           <div className="relative w-[100px] h-[100px] rounded-xl overflow-hidden bg-gray-50">
-            <Image src={urlImage} alt={name} fill className="object-contain p-2" />
+            <Image
+              src={urlImage}
+              alt={name}
+              fill
+              className="object-contain p-2"
+              loading="lazy"
+              quality={75}
+              sizes="(max-width: 768px) 100px, 100px"
+            />
           </div>
 
           <div className="flex items-center gap-1 mt-1">
