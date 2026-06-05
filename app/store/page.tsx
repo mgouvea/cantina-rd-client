@@ -237,7 +237,6 @@ const StorePage = () => {
                     key={category._id}
                     value={String(index)}
                     className="w-full h-full p-6"
-                    forceMount
                   >
                     {isLoadingProducts ? (
                       <LoadingAnimation
