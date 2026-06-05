@@ -231,40 +231,38 @@ const StorePage = () => {
 
             {/* Products Grid */}
             <div className="relative w-full h-full overflow-y-auto overflow-x-hidden bg-white rounded-2xl shadow-lg border border-gray-100 custom-scrollbar">
-              {categories?.map((category: Category, index: number) =>
-                Number(activeTab) === index ? (
-                  <TabsContent
-                    key={category._id}
-                    value={String(index)}
-                    className="w-full h-full p-6"
-                  >
-                    {isLoadingProducts ? (
-                      <LoadingAnimation
-                        showImage={false}
-                        title="Carregando produtos..."
-                        titleSize="text-2xl"
-                      />
-                    ) : products && products.length > 0 ? (
-                      <div className="grid grid-cols-1 gap-4">
-                        {products.map((prod: Products) => (
-                          <CardProducts2
-                            key={prod._id}
-                            _id={prod._id}
-                            name={prod.name}
-                            price={prod.price}
-                            urlImage={prod.urlImage}
-                            description={prod.description}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                        <Package className="w-16 h-16 mb-4" />
-                        <p className="text-lg">Nenhum produto disponível</p>
-                      </div>
-                    )}
-                  </TabsContent>
-                ) : null,
+              {categories && categories[Number(activeTab)] && (
+                <TabsContent
+                  key={categories[Number(activeTab)]._id}
+                  value={activeTab}
+                  className="w-full h-full p-6"
+                >
+                  {isLoadingProducts ? (
+                    <LoadingAnimation
+                      showImage={false}
+                      title="Carregando produtos..."
+                      titleSize="text-2xl"
+                    />
+                  ) : products && products.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-4">
+                      {products.map((prod: Products) => (
+                        <CardProducts2
+                          key={prod._id}
+                          _id={prod._id}
+                          name={prod.name}
+                          price={prod.price}
+                          urlImage={prod.urlImage}
+                          description={prod.description}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                      <Package className="w-16 h-16 mb-4" />
+                      <p className="text-lg">Nenhum produto disponível</p>
+                    </div>
+                  )}
+                </TabsContent>
               )}
             </div>
           </Tabs>
