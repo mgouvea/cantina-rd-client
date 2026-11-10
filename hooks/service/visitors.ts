@@ -1,4 +1,4 @@
-import { Visitor } from "@/types";
+import { Visitor, VisitorsGrouped } from "@/types";
 import { http } from "@/lib/http";
 
 export const CreateVisitor = async (visitor: Visitor) => {
@@ -7,6 +7,12 @@ export const CreateVisitor = async (visitor: Visitor) => {
 
 export const GetAllVisitors = async () => {
   return (await http.get("visitors")).data;
+};
+
+export const GetVisitorgrouped = async (
+  search?: string,
+): Promise<VisitorsGrouped | Visitor[]> => {
+  return (await http.get("visitors/grouped", { params: search ? { search } : {} })).data;
 };
 
 export const GetVisitorById = async (id: string) => {

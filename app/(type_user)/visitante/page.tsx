@@ -4,7 +4,7 @@ import { NormalizeText } from "@/utils";
 import { Search, Users, UserPlus } from "lucide-react";
 import { MagnifyingGlass } from "react-loader-spinner";
 import { useRouter } from "next/navigation";
-import { useVisitors } from "@/hooks/queries";
+import { useVisitorsGrouped } from "@/hooks/queries";
 import { useVisitorStore } from "@/contexts";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,12 @@ import { Visitor } from "@/types";
 
 const Page = () => {
   const router = useRouter();
-  const { data: visitors, isLoading } = useVisitors();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const isSearching = debouncedSearch.length >= 3;
+  const { data: visitors, isLoading } = useVisitorsGrouped(
+    isSearching ? debouncedSearch : undefined,
+  );
   const [open, setOpen] = useState(false);
   const { updateVisitor } = useVisitorStore();
 
@@ -25,20 +28,31 @@ const Page = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const filteredVisitors = useMemo(() => {
-    if (!visitors || debouncedSearch.length < 3) {
-      return debouncedSearch.length > 0 && debouncedSearch.length < 3 ? [] : visitors || [];
-    }
+  const orderedGroups = useMemo<[string, Visitor[]][]>(() => {
+    if (!visitors || Array.isArray(visitors)) return [];
+    const isNonMember = (group: string) =>
+      NormalizeText(group).replace(/\s+/g, " ").trim() === "nao socios";
+    return Object.entries(visitors)
+      .sort(([groupA], [groupB]) => {
+        const isNonMemberA = isNonMember(groupA);
+        const isNonMemberB = isNonMember(groupB);
+        if (isNonMemberA !== isNonMemberB) return isNonMemberA ? -1 : 1;
+        return groupA.localeCompare(groupB, "pt-BR");
+      })
+      .map(([group, members]): [string, Visitor[]] => [
+        group,
+        [...members].sort((a, b) => a.name.localeCompare(b.name, "pt-BR")),
+      ]);
+  }, [visitors]);
 
-    const normalizedSearch = NormalizeText(debouncedSearch.trim());
-    return visitors.filter((visitor: Visitor) => {
-      const normalizedName = NormalizeText(visitor.name);
-      const normalizedTelephone = NormalizeText(visitor.telephone);
-      return (
-        normalizedName.includes(normalizedSearch) || normalizedTelephone.includes(normalizedSearch)
-      );
-    });
-  }, [visitors, debouncedSearch]);
+  const searchResults = useMemo(() => {
+    if (!Array.isArray(visitors)) return [];
+    return [...visitors].sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+  }, [visitors]);
+
+  const totalCount = isSearching
+    ? searchResults.length
+    : orderedGroups.reduce((acc, [, members]) => acc + members.length, 0);
 
   const handleSelectVisitor = (visitor: Visitor) => {
     updateVisitor(visitor);
@@ -85,7 +99,7 @@ const Page = () => {
           <div className="relative">
             <Input
               type="text"
-              placeholder="Digite pelo menos 3 caracteres para buscar..."
+              placeholder="Não está na lista? Pesquise pelo nome ou telefone aqui"
               className="pr-16 bg-white/80 backdrop-blur-sm shadow-lg border-2 border-gray-100 h-14 text-base rounded-xl transition-all duration-300 relative z-10"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -108,11 +122,17 @@ const Page = () => {
         </div>
 
         {/* Contador */}
-        {!isLoading && filteredVisitors.length > 0 && (
+        {!isLoading && totalCount > 0 && debouncedSearch.length !== 1 && debouncedSearch.length !== 2 && (
           <div className="mt-3 ml-1">
             <p className="text-sm text-gray-500 font-medium">
-              {filteredVisitors.length}{" "}
-              {filteredVisitors.length === 1 ? "visitante encontrado" : "visitantes encontrados"}
+              {totalCount}{" "}
+              {isSearching
+                ? totalCount === 1
+                  ? "visitante encontrado"
+                  : "visitantes encontrados"
+                : totalCount === 1
+                  ? "visitante recente encontrado"
+                  : "visitantes recentes encontrados"}
             </p>
           </div>
         )}
@@ -120,8 +140,8 @@ const Page = () => {
 
       {/* Lista */}
       <div className="flex-1 padding-container overflow-hidden">
-        <div className="overflow-y-auto max-h-[calc(100vh-320px)] pr-2 space-y-3 custom-scrollbar">
-          {isLoading ? (
+        <div className="overflow-y-auto max-h-[calc(100vh-320px)] pr-2 pb-28 space-y-3 custom-scrollbar">
+          {isLoading || (isSearching && !Array.isArray(visitors)) ? (
             <div className="flex items-center justify-center py-20">
               <MagnifyingGlass
                 visible={true}
@@ -132,29 +152,50 @@ const Page = () => {
                 color="#005f78"
               />
             </div>
-          ) : filteredVisitors.length > 0 ? (
+          ) : isSearching && searchResults.length > 0 ? (
             <div className="space-y-3 animate-fade-in">
-              {filteredVisitors
-                .sort((a: Visitor, b: Visitor) => a.name.localeCompare(b.name))
-                .map((visitor: Visitor) => (
-                  <div
-                    key={visitor._id}
-                    className="transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
-                  >
-                    <CardVisitors {...visitor} onUserSelect={() => handleSelectVisitor(visitor)} />
-                  </div>
-                ))}
+              {searchResults.map((visitor: Visitor) => (
+                <div
+                  key={visitor._id}
+                  className="transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
+                >
+                  <CardVisitors {...visitor} onUserSelect={() => handleSelectVisitor(visitor)} />
+                </div>
+              ))}
             </div>
-          ) : debouncedSearch.length > 0 && debouncedSearch.length < 3 ? (
-            <EmptyState
-              message="Continue digitando..."
-              subtitle="Digite pelo menos 3 caracteres para buscar"
-            />
-          ) : debouncedSearch.length >= 3 ? (
+          ) : isSearching ? (
             <EmptyState
               message={`Nenhum visitante encontrado com "${debouncedSearch}"`}
               subtitle="Tente outro termo de pesquisa"
             />
+          ) : debouncedSearch.length > 0 ? (
+            <EmptyState
+              message="Continue digitando..."
+              subtitle="Digite pelo menos 3 caracteres para buscar"
+            />
+          ) : orderedGroups.length > 0 ? (
+            <div className="space-y-5 animate-fade-in">
+              {orderedGroups.map(([group, members]) => (
+                <div key={group} className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 px-1">
+                    {group}
+                  </p>
+                  <div className="space-y-3">
+                    {members.map((visitor: Visitor) => (
+                      <div
+                        key={visitor._id}
+                        className="transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
+                      >
+                        <CardVisitors
+                          {...visitor}
+                          onUserSelect={() => handleSelectVisitor(visitor)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
             <EmptyState message="Nenhum visitante recente" subtitle="Registre-se para começar" />
           )}

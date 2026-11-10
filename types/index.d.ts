@@ -18,6 +18,8 @@ interface Visitor {
   lastVisit?: Date;
 }
 
+type VisitorsGrouped = Record<string, Visitor[]>;
+
 interface Category {
   _id: string;
   name: string;

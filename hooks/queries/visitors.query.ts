@@ -1,11 +1,20 @@
-import { useQuery } from "@tanstack/react-query";
-import { GetAllVisitors, GetVisitorByPhone } from "../service";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { GetAllVisitors, GetVisitorByPhone, GetVisitorgrouped } from "../service";
 
 export const useVisitors = () => {
   return useQuery({
     queryKey: ["visitors"],
     queryFn: () => GetAllVisitors(),
     retry: 1,
+  });
+};
+
+export const useVisitorsGrouped = (search?: string) => {
+  return useQuery({
+    queryKey: ["visitors-grouped", search ?? ""],
+    queryFn: () => GetVisitorgrouped(search),
+    retry: 1,
+    placeholderData: keepPreviousData,
   });
 };
 
